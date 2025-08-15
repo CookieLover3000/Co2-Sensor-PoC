@@ -37,6 +37,10 @@ add_executable(${CMAKE_PROJECT_NAME})
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
+# Add lvgl
+set(LV_BUILD_CONF_PATH ${CMAKE_SOURCE_DIR}/Core/Inc/lv_conf.h CACHE STRING "" FORCE)
+add_subdirectory(Middlewares/Third_Party/lvgl)
+
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths
