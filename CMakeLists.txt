@@ -38,7 +38,7 @@ add_executable(${CMAKE_PROJECT_NAME})
 add_subdirectory(cmake/stm32cubemx)
 
 # Add lvgl
-set(LV_BUILD_CONF_PATH ${CMAKE_SOURCE_DIR}/Core/Inc/lv_conf.h CACHE STRING "" FORCE)
+set(LV_BUILD_CONF_PATH ${CMAKE_SOURCE_DIR}/Core/Inc/lv_conf.h)
 add_subdirectory(Middlewares/Third_Party/lvgl)
 
 # Link directories setup
@@ -53,7 +53,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+    ${CMAKE_SOURCE_DIR}/Middlewares/Third_Party/lvgl/
     # Add user defined include paths
+    # Core/Inc/
 )
 
 # Add project symbols (macros)
@@ -67,6 +69,7 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
+    lvgl
 
     # Add user defined libraries
 )
