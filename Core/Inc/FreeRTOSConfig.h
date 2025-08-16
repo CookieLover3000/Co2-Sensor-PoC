@@ -44,6 +44,7 @@
  *----------------------------------------------------------*/
 
 /* USER CODE BEGIN Includes */
+#include "main.h"
 /* Section where include file can be added */
 /* USER CODE END Includes */
 
@@ -162,8 +163,13 @@ standard names. */
 /* IMPORTANT: After 10.3.1 update, Systick_Handler comes from NVIC (if SYS timebase = systick), otherwise from cmsis_os2.c */
 
 #define USE_CUSTOM_SYSTICK_HANDLER_IMPLEMENTATION 0
-
+#ifdef DEBUG_MODE
 /* USER CODE BEGIN Defines */
+#define configGENERATE_RUN_TIME_STATS    1
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS()  configureTimerForRunTimeStats()
+#define portGET_RUN_TIME_COUNTER_VALUE()          TIM1->CNT
+#endif
+
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */
 /* USER CODE END Defines */
 

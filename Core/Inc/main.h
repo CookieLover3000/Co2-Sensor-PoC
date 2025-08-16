@@ -39,7 +39,7 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+void configureTimerForRunTimeStats(void);
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

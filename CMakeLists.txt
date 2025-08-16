@@ -17,6 +17,10 @@ set(CMAKE_C_EXTENSIONS ON)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # This block of code will only be executed for a debug build.
+    add_definitions(-DDEBUG_MODE)
+endif()
 
 # Set the project name
 set(CMAKE_PROJECT_NAME Co2-Sensor-PoC)
