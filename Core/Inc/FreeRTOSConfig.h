@@ -174,8 +174,9 @@ standard names. */
  * timebase = systick), otherwise from cmsis_os2.c */
 
 #define USE_CUSTOM_SYSTICK_HANDLER_IMPLEMENTATION 0
-#ifdef DEBUG_MODE
+
 /* USER CODE BEGIN Defines */
+#ifdef DEBUG_MODE
 #define configGENERATE_RUN_TIME_STATS            1
 #define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() configureTimerForRunTimeStats()
 #define portGET_RUN_TIME_COUNTER_VALUE()         TIM1->CNT
