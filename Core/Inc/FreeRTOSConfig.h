@@ -182,6 +182,8 @@ standard names. */
 #define portGET_RUN_TIME_COUNTER_VALUE()         TIM1->CNT
 #endif
 
+#define configRECORD_STACK_HIGH_ADDRESS 1
+
 /* Section where parameter definitions can be added (for instance, to override
  * default ones in FreeRTOS.h) */
 /* USER CODE END Defines */
