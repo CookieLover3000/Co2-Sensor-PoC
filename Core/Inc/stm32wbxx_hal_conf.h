@@ -101,18 +101,16 @@ extern "C" {
 #endif                      /* HSE_VALUE */
 
 #if !defined(HSE_STARTUP_TIMEOUT)
-#define HSE_STARTUP_TIMEOUT                                                    \
-    ((uint32_t)100) /*!< Time out for HSE start up, in ms */
-#endif              /* HSE_STARTUP_TIMEOUT */
+#define HSE_STARTUP_TIMEOUT ((uint32_t)100) /*!< Time out for HSE start up, in ms */
+#endif                                      /* HSE_STARTUP_TIMEOUT */
 
 /**
  * @brief Internal Multiple Speed oscillator (MSI) default value.
  *        This value is the default MSI range value after Reset.
  */
 #if !defined(MSI_VALUE)
-#define MSI_VALUE                                                              \
-    ((uint32_t)4000000) /*!< Value of the Internal oscillator in Hz*/
-#endif                  /* MSI_VALUE */
+#define MSI_VALUE ((uint32_t)4000000) /*!< Value of the Internal oscillator in Hz*/
+#endif                                /* MSI_VALUE */
 
 /**
  * @brief Internal High Speed oscillator (HSI) value.
@@ -129,17 +127,17 @@ extern "C" {
  */
 #if !defined(LSI1_VALUE)
 #define LSI1_VALUE ((uint32_t)32000) /*!< LSI1 Typical Value in Hz*/
-#endif /* LSI1_VALUE */ /*!< Value of the Internal Low Speed oscillator in Hz  \
-                        The real value may vary depending on the variations    \
-                        in voltage and temperature.*/
+#endif /* LSI1_VALUE */              /*!< Value of the Internal Low Speed oscillator in Hz         \
+                                     The real value may vary depending on the variations           \
+                                     in voltage and temperature.*/
 /**
  * @brief Internal Low Speed oscillator (LSI2) value.
  */
 #if !defined(LSI2_VALUE)
 #define LSI2_VALUE ((uint32_t)32000) /*!< LSI2 Typical Value in Hz*/
-#endif /* LSI2_VALUE */ /*!< Value of the Internal Low Speed oscillator in Hz  \
-                        The real value may vary depending on the variations    \
-                        in voltage and temperature.*/
+#endif /* LSI2_VALUE */              /*!< Value of the Internal Low Speed oscillator in Hz         \
+                                     The real value may vary depending on the variations           \
+                                     in voltage and temperature.*/
 
 /**
  * @brief External Low Speed oscillator (LSE) value.
@@ -155,9 +153,8 @@ extern "C" {
  *        This value is the default HSI48 range value after Reset.
  */
 #if !defined(HSI48_VALUE)
-#define HSI48_VALUE                                                            \
-    ((uint32_t)48000000) /*!< Value of the Internal oscillator in Hz*/
-#endif                   /* HSI48_VALUE */
+#define HSI48_VALUE ((uint32_t)48000000) /*!< Value of the Internal oscillator in Hz*/
+#endif                                   /* HSI48_VALUE */
 
 #if !defined(LSE_STARTUP_TIMEOUT)
 #define LSE_STARTUP_TIMEOUT 5000U /*!< Time out for LSE start up, in ms */
@@ -169,7 +166,7 @@ extern "C" {
  * clock source frequency.
  */
 #if !defined(EXTERNAL_SAI1_CLOCK_VALUE)
-#define EXTERNAL_SAI1_CLOCK_VALUE                                              \
+#define EXTERNAL_SAI1_CLOCK_VALUE                                                                  \
     ((uint32_t)2097000) /*!< Value of the SAI1 External clock source in Hz*/
 #endif                  /* EXTERNAL_SAI1_CLOCK_VALUE */
 
@@ -202,7 +199,7 @@ extern "C" {
  * Deactivated: CRC code cleaned from driver
  */
 
-#define USE_SPI_CRC 0U
+#define USE_SPI_CRC              0U
 
 /* Includes ------------------------------------------------------------------*/
 /**
@@ -346,8 +343,7 @@ extern "C" {
  *         If expr is true, it returns no value.
  * @retval None
  */
-#define assert_param(expr)                                                     \
-    ((expr) ? (void)0U : assert_failed((uint8_t *)__FILE__, __LINE__))
+#define assert_param(expr) ((expr) ? (void)0U : assert_failed((uint8_t *)__FILE__, __LINE__))
 /* Exported functions ------------------------------------------------------- */
 void assert_failed(uint8_t *file, uint32_t line);
 #else

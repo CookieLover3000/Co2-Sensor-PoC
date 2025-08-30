@@ -53,9 +53,9 @@ extern "C" {
 #define USE_BSP_COM_FEATURE 1U
 
 /* IRQ priorities */
-#define BSP_B1_IT_PRIORITY 15U
-#define BSP_B2_IT_PRIORITY 15U
-#define BSP_B3_IT_PRIORITY 15U
+#define BSP_B1_IT_PRIORITY  15U
+#define BSP_B2_IT_PRIORITY  15U
+#define BSP_B3_IT_PRIORITY  15U
 
 /**
  * @}
