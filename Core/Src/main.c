@@ -107,15 +107,14 @@ void ledTask()
  */
 int main(void)
 {
+
     /* USER CODE BEGIN 1 */
 
     /* USER CODE END 1 */
 
-    /* MCU
-     * Configuration--------------------------------------------------------*/
+    /* MCU Configuration--------------------------------------------------------*/
 
-    /* Reset of all peripherals, Initializes the Flash interface and the
-     * Systick. */
+    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
 
     /* USER CODE BEGIN Init */
@@ -164,7 +163,7 @@ int main(void)
 
     /* Create the thread(s) */
     /* creation of defaultTask */
-    // defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+    defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
     /* USER CODE BEGIN RTOS_THREADS */
     // ledTaskHandle = osThreadNew(ledTask, NULL, NULL);
@@ -183,14 +182,12 @@ int main(void)
     BSP_LED_Init(LED_GREEN);
     BSP_LED_Init(LED_RED);
 
-    /* Initialize USER push-button, will be used to trigger an interrupt each
-     * time it's pressed.*/
+    /* Initialize USER push-button, will be used to trigger an interrupt each time it's pressed.*/
     BSP_PB_Init(BUTTON_SW1, BUTTON_MODE_EXTI);
     BSP_PB_Init(BUTTON_SW2, BUTTON_MODE_EXTI);
     BSP_PB_Init(BUTTON_SW3, BUTTON_MODE_EXTI);
 
-    /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity
-     */
+    /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
     BspCOMInit.BaudRate = 115200;
     BspCOMInit.WordLength = COM_WORDLENGTH_8B;
     BspCOMInit.StopBits = COM_STOPBITS_1;
@@ -365,7 +362,7 @@ static void MX_SPI1_Init(void)
     /* SPI1 parameter configuration*/
     hspi1.Instance = SPI1;
     hspi1.Init.Mode = SPI_MODE_MASTER;
-    hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+    hspi1.Init.Direction = SPI_DIRECTION_1LINE;
     hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
     hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
     hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;

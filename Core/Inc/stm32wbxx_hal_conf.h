@@ -88,13 +88,11 @@ extern "C" {
 #define USE_HAL_USART_REGISTER_CALLBACKS     0u
 #define USE_HAL_WWDG_REGISTER_CALLBACKS      0u
 
-/* ########################## Oscillator Values adaptation
- * ####################*/
+/* ########################## Oscillator Values adaptation ####################*/
 /**
- * @brief Adjust the value of External High Speed oscillator (HSE) used in your
- * application. This value is used by the RCC HAL module to compute the system
- * frequency (when HSE is used as system clock source, directly or through the
- * PLL).
+ * @brief Adjust the value of External High Speed oscillator (HSE) used in your application.
+ *        This value is used by the RCC HAL module to compute the system frequency
+ *        (when HSE is used as system clock source, directly or through the PLL).
  */
 #if !defined(HSE_VALUE)
 #define HSE_VALUE 32000000U /*!< Value of the External oscillator in Hz */
@@ -114,9 +112,8 @@ extern "C" {
 
 /**
  * @brief Internal High Speed oscillator (HSI) value.
- *        This value is used by the RCC HAL module to compute the system
- * frequency (when HSI is used as system clock source, directly or through the
- * PLL).
+ *        This value is used by the RCC HAL module to compute the system frequency
+ *        (when HSI is used as system clock source, directly or through the PLL).
  */
 #if !defined(HSI_VALUE)
 #define HSI_VALUE 16000000U /*!< Value of the Internal oscillator in Hz*/
@@ -141,8 +138,7 @@ extern "C" {
 
 /**
  * @brief External Low Speed oscillator (LSE) value.
- *        This value is used by the UART, RTC HAL module to compute the system
- * frequency
+ *        This value is used by the UART, RTC HAL module to compute the system frequency
  */
 #if !defined(LSE_VALUE)
 #define LSE_VALUE 32768U /*!< Value of the External oscillator in Hz*/
@@ -162,8 +158,8 @@ extern "C" {
 
 /**
  * @brief External clock source for SAI1 peripheral
- *        This value is used by the RCC HAL module to compute the SAI1 & SAI2
- * clock source frequency.
+ *        This value is used by the RCC HAL module to compute the SAI1 & SAI2 clock source
+ *        frequency.
  */
 #if !defined(EXTERNAL_SAI1_CLOCK_VALUE)
 #define EXTERNAL_SAI1_CLOCK_VALUE                                                                  \

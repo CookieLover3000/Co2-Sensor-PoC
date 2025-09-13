@@ -39,8 +39,8 @@
  * These definitions should be adjusted for your particular hardware and
  * application requirements.
  *
- * These parameters and more are described within the 'configuration' section of
- *the FreeRTOS API documentation available on the FreeRTOS.org web site.
+ * These parameters and more are described within the 'configuration' section of the
+ * FreeRTOS API documentation available on the FreeRTOS.org web site.
  *
  * See http://www.freertos.org/a00110.html
  *----------------------------------------------------------*/
@@ -50,8 +50,7 @@
 /* Section where include file can be added */
 /* USER CODE END Includes */
 
-/* Ensure definitions are only used by the compiler, and not by the assembler.
- */
+/* Ensure definitions are only used by the compiler, and not by the assembler. */
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
 #include <stdint.h>
 extern uint32_t SystemCoreClock;
@@ -122,8 +121,8 @@ to exclude the API function. */
 #define INCLUDE_eTaskGetState                   1
 
 /*
- * The CMSIS-RTOS V2 FreeRTOS wrapper is dependent on the heap implementation
- * used by the application thus the correct define need to be enabled below
+ * The CMSIS-RTOS V2 FreeRTOS wrapper is dependent on the heap implementation used
+ * by the application thus the correct define need to be enabled below
  */
 #define USE_FreeRTOS_HEAP_4
 
@@ -170,8 +169,8 @@ standard names. */
 #define vPortSVCHandler                           SVC_Handler
 #define xPortPendSVHandler                        PendSV_Handler
 
-/* IMPORTANT: After 10.3.1 update, Systick_Handler comes from NVIC (if SYS
- * timebase = systick), otherwise from cmsis_os2.c */
+/* IMPORTANT: After 10.3.1 update, Systick_Handler comes from NVIC (if SYS timebase = systick),
+ * otherwise from cmsis_os2.c */
 
 #define USE_CUSTOM_SYSTICK_HANDLER_IMPLEMENTATION 0
 
