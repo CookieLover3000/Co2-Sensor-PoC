@@ -159,6 +159,48 @@ void DebugMon_Handler(void)
 /******************************************************************************/
 
 /**
+ * @brief This function handles EXTI line0 interrupt.
+ */
+void EXTI0_IRQHandler(void)
+{
+    /* USER CODE BEGIN EXTI0_IRQn 0 */
+
+    /* USER CODE END EXTI0_IRQn 0 */
+    HAL_GPIO_EXTI_IRQHandler(BUTTON_SW2_PIN);
+    /* USER CODE BEGIN EXTI0_IRQn 1 */
+
+    /* USER CODE END EXTI0_IRQn 1 */
+}
+
+/**
+ * @brief This function handles EXTI line1 interrupt.
+ */
+void EXTI1_IRQHandler(void)
+{
+    /* USER CODE BEGIN EXTI1_IRQn 0 */
+
+    /* USER CODE END EXTI1_IRQn 0 */
+    HAL_GPIO_EXTI_IRQHandler(BUTTON_SW3_PIN);
+    /* USER CODE BEGIN EXTI1_IRQn 1 */
+
+    /* USER CODE END EXTI1_IRQn 1 */
+}
+
+/**
+ * @brief This function handles EXTI line4 interrupt.
+ */
+void EXTI4_IRQHandler(void)
+{
+    /* USER CODE BEGIN EXTI4_IRQn 0 */
+
+    /* USER CODE END EXTI4_IRQn 0 */
+    HAL_GPIO_EXTI_IRQHandler(BUTTON_SW1_PIN);
+    /* USER CODE BEGIN EXTI4_IRQn 1 */
+
+    /* USER CODE END EXTI4_IRQn 1 */
+}
+
+/**
  * @brief This function handles DMA1 channel1 global interrupt.
  */
 void DMA1_Channel1_IRQHandler(void)
