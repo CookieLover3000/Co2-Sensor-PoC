@@ -10,9 +10,9 @@
  *                      before branch to main program. This call is made inside
  *                      the "startup_stm32wbxx.s" file.
  *
- *      - SystemCoreClock variable: Contains the core clock (HCLK), it can be
- *used by the user application to setup the SysTick timer or configure other
- *parameters.
+ *      - SystemCoreClock variable: Contains the core clock (HCLK), it can be used
+ *                                  by the user application to setup the SysTick
+ *                                  timer or configure other parameters.
  *
  *      - SystemCoreClockUpdate(): Updates the variable SystemCoreClock and must
  *                                 be called whenever the core clock is changed
@@ -128,8 +128,7 @@
          configuration. */
 /*!< Uncomment the following line if you need to relocate CPU1 CM4 and/or CPU2
      CM0+ vector table anywhere in Sram or Flash. Else vector table will be kept
-     at address 0x00 which correspond to automatic remap of boot address
-   selected */
+     at address 0x00 which correspond to automatic remap of boot address selected */
 /* #define USER_VECT_TAB_ADDRESS */
 #if defined(USER_VECT_TAB_ADDRESS)
 /*!< Uncomment this line for user vector table remap in Sram else user remap
@@ -176,10 +175,10 @@
 /* The SystemCoreClock variable is updated in three ways:
     1) by calling CMSIS function SystemCoreClockUpdate()
     2) by calling HAL API function HAL_RCC_GetHCLKFreq()
-    3) each time HAL_RCC_ClockConfig() is called to configure the system clock
-   frequency Note: If you use this function to configure the system clock; then
-   there is no need to call the 2 first functions listed above, since
-   SystemCoreClock variable is updated automatically.
+    3) each time HAL_RCC_ClockConfig() is called to configure the system clock frequency
+       Note: If you use this function to configure the system clock; then there
+             is no need to call the 2 first functions listed above, since SystemCoreClock
+             variable is updated automatically.
 */
 uint32_t SystemCoreClock = 4000000UL; /*CPU1: M4 on MSI clock after startup (4MHz)*/
 
@@ -199,8 +198,7 @@ const uint32_t SmpsPrescalerTable[4UL][6UL] = {{1UL, 3UL, 2UL, 2UL, 1UL, 2UL},
                                                {2UL, 6UL, 4UL, 3UL, 2UL, 4UL},
                                                {4UL, 12UL, 8UL, 6UL, 4UL, 8UL},
                                                {4UL, 12UL, 8UL, 6UL, 4UL, 8UL}};
-#endif /* STM32WB55xx || STM32WB5Mxx || STM32WB35xx || STM32WB15xx ||                              \
-          STM32WB1Mxx */
+#endif /* STM32WB55xx || STM32WB5Mxx || STM32WB35xx || STM32WB15xx || STM32WB1Mxx */
 
 /**
  * @}
@@ -226,20 +224,17 @@ const uint32_t SmpsPrescalerTable[4UL][6UL] = {{1UL, 3UL, 2UL, 2UL, 1UL, 2UL},
 void SystemInit(void)
 {
 #if defined(USER_VECT_TAB_ADDRESS)
-    /* Configure the Vector Table location add offset address
-     * ------------------*/
+    /* Configure the Vector Table location add offset address ------------------*/
     SCB->VTOR = VECT_TAB_BASE_ADDRESS | VECT_TAB_OFFSET;
 #endif /* USER_VECT_TAB_ADDRESS */
 
-    /* FPU settings
-     * ------------------------------------------------------------*/
+    /* FPU settings ------------------------------------------------------------*/
 #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
     SCB->CPACR |=
         ((3UL << (10UL * 2UL)) | (3UL << (11UL * 2UL))); /* set CP10 and CP11 Full Access */
 #endif                                                   /* FPU */
 
-    /* Reset the RCC clock configuration to the default reset state
-     * ------------*/
+    /* Reset the RCC clock configuration to the default reset state ------------*/
     /* Set MSION bit */
     RCC->CR |= RCC_CR_MSION;
 
@@ -273,45 +268,41 @@ void SystemInit(void)
 /**
  * @brief  Update SystemCoreClock variable according to Clock Register Values.
  *         The SystemCoreClock variable contains the core clock (HCLK), it can
- *         be used by the user application to setup the SysTick timer or
- * configure other parameters.
+ *         be used by the user application to setup the SysTick timer or configure
+ *         other parameters.
  *
  * @note   Each time the core clock (HCLK) changes, this function must be called
- *         to update SystemCoreClock variable value. Otherwise, any
- * configuration based on this variable will be incorrect.
+ *         to update SystemCoreClock variable value. Otherwise, any configuration
+ *         based on this variable will be incorrect.
  *
  * @note   - The system frequency computed by this function is not the real
  *           frequency in the chip. It is calculated based on the predefined
  *           constant and the selected clock source:
  *
- *           - If SYSCLK source is MSI, SystemCoreClock will contain the
- * MSI_VALUE(*)
+ *           - If SYSCLK source is MSI, SystemCoreClock will contain the MSI_VALUE(*)
  *
- *           - If SYSCLK source is HSI, SystemCoreClock will contain the
- * HSI_VALUE(**)
+ *           - If SYSCLK source is HSI, SystemCoreClock will contain the HSI_VALUE(**)
  *
- *           - If SYSCLK source is HSE, SystemCoreClock will contain the
- * HSE_VALUE(***)
+ *           - If SYSCLK source is HSE, SystemCoreClock will contain the HSE_VALUE(***)
  *
- *           - If SYSCLK source is PLL, SystemCoreClock will contain the
- * HSE_VALUE(***) or HSI_VALUE(*) or MSI_VALUE(*) multiplied/divided by the PLL
- * factors.
+ *           - If SYSCLK source is PLL, SystemCoreClock will contain the HSE_VALUE(***)
+ *             or HSI_VALUE(*) or MSI_VALUE(*) multiplied/divided by the PLL factors.
  *
- *         (*) MSI_VALUE is a constant defined in stm32wbxx_hal.h file (default
- * value 4 MHz) but the real value may vary depending on the variations in
- * voltage and temperature.
+ *         (*) MSI_VALUE is a constant defined in stm32wbxx_hal.h file (default value
+ *             4 MHz) but the real value may vary depending on the variations
+ *             in voltage and temperature.
  *
- *         (**) HSI_VALUE is a constant defined in stm32wbxx_hal_conf.h file
- * (default value 16 MHz) but the real value may vary depending on the
- * variations in voltage and temperature.
+ *         (**) HSI_VALUE is a constant defined in stm32wbxx_hal_conf.h file (default value
+ *              16 MHz) but the real value may vary depending on the variations
+ *              in voltage and temperature.
  *
- *         (***) HSE_VALUE is a constant defined in stm32wbxx_hal_conf.h file
- * (default value 32 MHz), user has to ensure that HSE_VALUE is same as the real
+ *         (***) HSE_VALUE is a constant defined in stm32wbxx_hal_conf.h file (default value
+ *              32 MHz), user has to ensure that HSE_VALUE is same as the real
  *              frequency of the crystal used. Otherwise, this function may
  *              have wrong result.
  *
- *         - The result of this function could be not correct when using
- * fractional value for HSE crystal.
+ *         - The result of this function could be not correct when using fractional
+ *           value for HSE crystal.
  *
  * @param  None
  * @retval None
@@ -320,14 +311,12 @@ void SystemCoreClockUpdate(void)
 {
     uint32_t tmp, msirange, pllvco, pllr, pllsource, pllm;
 
-    /* Get MSI Range
-     * frequency--------------------------------------------------*/
+    /* Get MSI Range frequency--------------------------------------------------*/
 
     /*MSI frequency range in Hz*/
     msirange = MSIRangeTable[(RCC->CR & RCC_CR_MSIRANGE) >> RCC_CR_MSIRANGE_Pos];
 
-    /* Get SYSCLK source
-     * -------------------------------------------------------*/
+    /* Get SYSCLK source -------------------------------------------------------*/
     switch (RCC->CFGR & RCC_CFGR_SWS) {
     case 0x00: /* MSI used as system clock source */
         SystemCoreClock = msirange;
@@ -371,8 +360,7 @@ void SystemCoreClockUpdate(void)
         break;
     }
 
-    /* Compute HCLK clock frequency
-     * --------------------------------------------*/
+    /* Compute HCLK clock frequency --------------------------------------------*/
     /* Get HCLK1 prescaler */
     tmp = AHBPrescTable[((RCC->CFGR & RCC_CFGR_HPRE) >> RCC_CFGR_HPRE_Pos)];
 

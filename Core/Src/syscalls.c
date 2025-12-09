@@ -200,21 +200,19 @@ static int starm_getc(FILE *file)
 }
 
 // Define and initialize the standard I/O streams for Picolibc.
-// FDEV_SETUP_STREAM connects the starm_putc and starm_getc helper functions to
-// a FILE structure. _FDEV_SETUP_RW indicates the stream is for reading and
-// writing.
+// FDEV_SETUP_STREAM connects the starm_putc and starm_getc helper functions to a FILE structure.
+// _FDEV_SETUP_RW indicates the stream is for reading and writing.
 static FILE __stdio = FDEV_SETUP_STREAM(starm_putc, starm_getc, NULL, _FDEV_SETUP_RW);
 
-// Assign the standard stream pointers (stdin, stdout, stderr) to the
-// initialized stream. Picolibc uses these pointers for standard I/O operations
-// (printf, scanf, etc.).
+// Assign the standard stream pointers (stdin, stdout, stderr) to the initialized stream.
+// Picolibc uses these pointers for standard I/O operations (printf, scanf, etc.).
 FILE *const stdin = &__stdio;
 __strong_reference(stdin, stdout);
 __strong_reference(stdin, stderr);
 
-// Create strong aliases mapping standard C library function names (without
-// underscore) to the implemented system call stubs (with underscore). Picolibc
-// uses these standard names internally, so this linking is required.
+// Create strong aliases mapping standard C library function names (without underscore)
+// to the implemented system call stubs (with underscore). Picolibc uses these
+// standard names internally, so this linking is required.
 __strong_reference(_read, read);
 __strong_reference(_write, write);
 __strong_reference(_times, times);

@@ -18,13 +18,13 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
+#include "FreeRTOS.h"
+#include "cmsis_os2.h"
+
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "./src/drivers/display/st7796/lv_st7796.h"
-#include "display.h"
-#include "lvgl.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,6 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -71,33 +72,11 @@ static void MX_RF_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
-void ui_init(lv_display_t *disp);
-void lvglTask(void *argument);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern TIM_HandleTypeDef htim1;
-
-void configureTimerForRunTimeStats(void)
-{
-    HAL_TIM_Base_Start(&htim1); // Start TIM1 in free-running mode
-}
-
-osThreadId_t ledTaskHandle;
-
-void ledTask()
-{
-    uint8_t delay = 250;
-    while (1) {
-        BSP_LED_Toggle(LED_BLUE);
-        osDelay(delay);
-        BSP_LED_Toggle(LED_GREEN);
-        osDelay(delay);
-        BSP_LED_Toggle(LED_RED);
-        osDelay(delay);
-    }
-}
 
 /* USER CODE END 0 */
 
@@ -139,7 +118,7 @@ int main(void)
     MX_TIM1_Init();
     MX_RF_Init();
     /* USER CODE BEGIN 2 */
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
+
     /* USER CODE END 2 */
 
     /* Init scheduler */
@@ -166,10 +145,6 @@ int main(void)
     defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
     /* USER CODE BEGIN RTOS_THREADS */
-    // ledTaskHandle = osThreadNew(ledTask, NULL, NULL);
-
-    display_initLvgl();
-
     /* add threads, ... */
     /* USER CODE END RTOS_THREADS */
 
@@ -205,6 +180,7 @@ int main(void)
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1) {
+
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
@@ -550,8 +526,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 void Error_Handler(void)
 {
     /* USER CODE BEGIN Error_Handler_Debug */
-    /* User can add his own implementation to report the HAL error return state
-     */
+    /* User can add his own implementation to report the HAL error return state */
     __disable_irq();
     while (1) {
     }
@@ -568,9 +543,8 @@ void Error_Handler(void)
 void assert_failed(uint8_t *file, uint32_t line)
 {
     /* USER CODE BEGIN 6 */
-    /* User can add his own implementation to report the file name and line
-       number, ex: printf("Wrong parameters value: file %s on line %d\r\n",
-       file, line) */
+    /* User can add his own implementation to report the file name and line number,
+       ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
     /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
