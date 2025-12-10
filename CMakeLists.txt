@@ -42,8 +42,20 @@ add_executable(${CMAKE_PROJECT_NAME})
 add_subdirectory(cmake/stm32cubemx)
 
 # Add lvgl
+# Disable the building of the separate lvgl_demos target
+set(CONFIG_LV_BUILD_DEMOS OFF CACHE BOOL "" FORCE) 
+
+# Disable the building of the separate lvgl_examples target
+set(CONFIG_LV_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
 set(LV_BUILD_CONF_PATH ${CMAKE_SOURCE_DIR}/Core/Inc/lv_conf.h)
 add_subdirectory(Middlewares/Third_Party/lvgl)
+
+target_include_directories(lvgl PUBLIC
+    ${CMAKE_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/
+    ${CMAKE_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/include/
+    ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/RTOS2/Include/
+)
 
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
@@ -56,10 +68,11 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/display.c
 )
 
+
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/Middlewares/Third_Party/lvgl/
-    # Add user defined include paths
+    # Add user defined include paths'
     Core/Inc/
 )
 
