@@ -48,7 +48,7 @@ set(CONFIG_LV_BUILD_DEMOS OFF CACHE BOOL "" FORCE)
 # Disable the building of the separate lvgl_examples target
 set(CONFIG_LV_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-set(LV_BUILD_CONF_PATH ${CMAKE_SOURCE_DIR}/Core/Inc/lv_conf.h)
+set(LV_BUILD_CONF_PATH "${PROJECT_SOURCE_DIR}/Core/Inc/lv_conf.h" CACHE PATH "Path to lv_conf.h" FORCE)
 add_subdirectory(Middlewares/Third_Party/lvgl)
 
 target_include_directories(lvgl PUBLIC
