@@ -1,7 +1,7 @@
 #include "display.h"
-#include "homescreen.h"
 #include "./src/drivers/display/st7796/lv_st7796.h"
 #include "cmsis_os.h"
+#include "homescreen.h"
 #include "main.h"
 
 #include <stdint.h>
@@ -24,7 +24,7 @@ static void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_si
 osThreadId_t LvglTaskHandle;
 
 const osThreadAttr_t LvglTaskHandle_attributes = {
-    .name = "LvglTask", .priority = (osPriority_t)osPriorityIdle, .stack_size = 2048};
+    .name = "LvglTask", .priority = (osPriority_t)osPriorityAboveNormal6, .stack_size = 8192};
 /* End Task Handles */
 
 void display_initLvgl(void)
@@ -32,6 +32,15 @@ void display_initLvgl(void)
     HAL_GPIO_WritePin(LCD_BL_GPIO_Port, LCD_BL_Pin, GPIO_PIN_SET);
 
     LvglTaskHandle = osThreadNew(LVGL_Task, NULL, &LvglTaskHandle_attributes);
+
+    if (LvglTaskHandle == NULL) {
+        /* ERROR: The task was NOT created.
+           Execution will never reach the StartLvglTask function. */
+        printf("Failed to create LVGL Task! Check TOTAL_HEAP_SIZE.\n");
+        Error_Handler();
+    } else {
+        printf("Succesfully created LVGL Task! Check TOTAL_HEAP_SIZE.\n");
+    }
 }
 
 void lcd_color_transfer_ready_cb(SPI_HandleTypeDef *hspi)
