@@ -49,13 +49,16 @@ set(CONFIG_LV_BUILD_DEMOS OFF CACHE BOOL "" FORCE)
 set(CONFIG_LV_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 set(LV_BUILD_CONF_PATH "${PROJECT_SOURCE_DIR}/Core/Inc/lv_conf.h" CACHE PATH "Path to lv_conf.h" FORCE)
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE LV_CONF_INCLUDE_SIMPLE)
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/Core/Inc/")
 add_subdirectory(Middlewares/Third_Party/lvgl)
 
-target_include_directories(lvgl PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/
-    ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/include/
-    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/CMSIS/RTOS2/Include/
-)
+# Keeping this in here for now, as I might want to try and get lvgl working using LV_OS_FREERTOS
+# target_include_directories(lvgl PUBLIC
+#     ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/
+#     ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/include/
+#     ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/CMSIS/RTOS2/Include/
+# )
 
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
