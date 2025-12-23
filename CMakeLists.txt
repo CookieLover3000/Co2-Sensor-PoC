@@ -52,9 +52,9 @@ set(LV_BUILD_CONF_PATH "${PROJECT_SOURCE_DIR}/Core/Inc/lv_conf.h" CACHE PATH "Pa
 add_subdirectory(Middlewares/Third_Party/lvgl)
 
 target_include_directories(lvgl PUBLIC
-    ${CMAKE_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/
-    ${CMAKE_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/include/
-    ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/RTOS2/Include/
+    ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/
+    ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/include/
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/CMSIS/RTOS2/Include/
 )
 
 # Link directories setup
@@ -71,7 +71,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    ${CMAKE_SOURCE_DIR}/Middlewares/Third_Party/lvgl/
+    ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/lvgl/
     # Add user defined include paths'
     Core/Inc/
 )
