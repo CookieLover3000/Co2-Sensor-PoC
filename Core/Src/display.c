@@ -1,4 +1,5 @@
 #include "display.h"
+#include "homescreen.h"
 #include "./src/drivers/display/st7796/lv_st7796.h"
 #include "cmsis_os.h"
 #include "main.h"
@@ -12,7 +13,6 @@ volatile int lcd_bus_busy = 0;
 /* End Private variables */
 
 /* Function Prototypes */
-void ui_init(lv_display_t *disp);
 void LVGL_Task(void *argument);
 static void lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size,
                          const uint8_t *param, size_t param_size);
@@ -153,7 +153,7 @@ void LVGL_Task(void *argument)
     // }
     lv_display_set_buffers(lcd_disp, buf1, NULL, buf_size, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
-    ui_init(lcd_disp);
+    homescreen_init();
 
     for (;;) {
         /* The task running lv_timer_handler should have lower priority than that running
@@ -163,23 +163,4 @@ void LVGL_Task(void *argument)
          * performance */
         osDelay(10);
     }
-}
-
-void ui_init(lv_display_t *disp)
-{
-    lv_obj_t *obj;
-
-    /* set screen background to white */
-    lv_obj_t *scr = lv_screen_active();
-    lv_obj_set_style_bg_color(scr, lv_color_white(), 0);
-    lv_obj_set_style_bg_opa(scr, LV_OPA_100, 0);
-
-    /* create label */
-    obj = lv_label_create(scr);
-    lv_obj_set_align(obj, LV_ALIGN_CENTER);
-    lv_obj_set_height(obj, LV_SIZE_CONTENT);
-    lv_obj_set_width(obj, LV_SIZE_CONTENT);
-    lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, 0);
-    lv_obj_set_style_text_color(obj, lv_color_black(), 0);
-    lv_label_set_text(obj, "Hello World!");
 }
