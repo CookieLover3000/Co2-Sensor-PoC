@@ -4,6 +4,7 @@
 #include "homescreen.h"
 #include "main.h"
 
+#include <src/misc/lv_color.h>
 #include <stdint.h>
 
 /* Private variables */
@@ -36,10 +37,7 @@ void display_initLvgl(void)
     if (LvglTaskHandle == NULL) {
         /* ERROR: The task was NOT created.
            Execution will never reach the StartLvglTask function. */
-        printf("Failed to create LVGL Task! Check TOTAL_HEAP_SIZE.\n");
         Error_Handler();
-    } else {
-        printf("Succesfully created LVGL Task! Check TOTAL_HEAP_SIZE.\n");
     }
 }
 
@@ -137,7 +135,7 @@ void LVGL_Task(void *argument)
 
     /* Create the LVGL display object and the LCD display driver */
     lcd_disp =
-        lv_st7796_create(LCD_H_RES, LCD_V_RES, LV_LCD_FLAG_NONE, lcd_send_cmd, lcd_send_color);
+        lv_st7796_create(LCD_H_RES, LCD_V_RES, LV_LCD_FLAG_BGR, lcd_send_cmd, lcd_send_color);
     lv_display_set_rotation(lcd_disp, LV_DISPLAY_ROTATION_90);
 
     /* Allocate draw buffers on the heap. In this example we use two partial buffers of 1/10th size
@@ -161,7 +159,7 @@ void LVGL_Task(void *argument)
     //     return;
     // }
     lv_display_set_buffers(lcd_disp, buf1, NULL, buf_size, LV_DISPLAY_RENDER_MODE_PARTIAL);
-
+    // lv_display_set_color_format(lcd_disp, LV_COLOR_FORMAT_RGB565_SWAPPED);
     homescreen_init();
 
     for (;;) {
