@@ -104,7 +104,7 @@ static void homescreen_init_temp(void)
     lv_label_set_text(homescreen_temp_symbol_label, "°C");
     lv_obj_set_style_text_color(homescreen_temp_symbol_label, lv_color_white(), 0);
     lv_obj_set_style_text_opa(homescreen_temp_symbol_label, 255, 0);
-    lv_obj_set_style_text_font(homescreen_temp_symbol_label, &lv_font_montserrat_14, LV_PART_MAIN);
+    lv_obj_set_style_text_font(homescreen_temp_symbol_label, &lv_font_montserrat_18, LV_PART_MAIN);
 }
 
 static void homescreen_init_humidity(void)
@@ -142,7 +142,7 @@ static void homescreen_init_humidity(void)
     lv_label_set_text(homescreen_humidity_symbol_label, "%");
     lv_obj_set_style_text_color(homescreen_humidity_symbol_label, lv_color_white(), LV_PART_MAIN);
     lv_obj_set_style_text_opa(homescreen_humidity_symbol_label, 255, 0);
-    lv_obj_set_style_text_font(homescreen_humidity_symbol_label, &lv_font_montserrat_14,
+    lv_obj_set_style_text_font(homescreen_humidity_symbol_label, &lv_font_montserrat_18,
                                LV_PART_MAIN);
 }
 
