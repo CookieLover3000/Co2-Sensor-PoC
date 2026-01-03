@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 /* Private defines */
-#define DRAW_BUF_SIZE (LCD_H_RES * LCD_V_RES / 10 * 2) // *2 for 16-bit color depth
+#define DRAW_BUF_SIZE         (LCD_H_RES * LCD_V_RES / 10 * 2) // *2 for 16-bit color depth
 
 #define LCD_H_RES             320
 #define LCD_V_RES             480
@@ -90,9 +90,7 @@ static void lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size
     LV_UNUSED(disp);
     while (lcd_bus_busy)
         ; /* wait until previous transfer is finished */
-    /* Set the SPI in 8-bit mode */
-    hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-    HAL_SPI_Init(&hspi1);
+
     /* DCX low (command) */
     HAL_GPIO_WritePin(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_RESET);
     /* CS low */
@@ -118,9 +116,7 @@ static void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_si
     LV_UNUSED(disp);
     while (lcd_bus_busy)
         ; /* wait until previous transfer is finished */
-    /* Set the SPI in 8-bit mode */
-    hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-    HAL_SPI_Init(&hspi1);
+
     /* DCX low (command) */
     HAL_GPIO_WritePin(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_RESET);
     /* CS low */
@@ -131,10 +127,12 @@ static void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_si
         HAL_GPIO_WritePin(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_SET);
         /* for color data use DMA transfer */
         /* Set the SPI in 16-bit mode to match endianness */
-        hspi1.Init.DataSize = SPI_DATASIZE_16BIT;
-        HAL_SPI_Init(&hspi1);
+
         lcd_bus_busy = 1;
-        HAL_SPI_Transmit_DMA(&hspi1, param, (uint16_t)param_size / 2);
+        if (HAL_SPI_Transmit_DMA(&hspi1, param, (uint16_t)param_size) != HAL_OK) {
+            lcd_bus_busy = 0;
+            HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
+        }
         /* NOTE: CS will be reset in the transfer ready callback */
     }
 }
@@ -153,15 +151,8 @@ void LVGL_Task(void *argument)
         lv_st7796_create(LCD_H_RES, LCD_V_RES, LV_LCD_FLAG_BGR, lcd_send_cmd, lcd_send_color);
     lv_display_set_rotation(lcd_disp, LV_DISPLAY_ROTATION_90);
 
-
-    // buf2 = lv_malloc(buf_size);
-    // if (buf2 == NULL) {
-    //     LV_LOG_ERROR("display buffer malloc failed");
-    //     lv_free(buf1);
-    //     return;
-    // }
     lv_display_set_buffers(lcd_disp, buf1, buf2, sizeof(buf1), LV_DISPLAY_RENDER_MODE_PARTIAL);
-    // lv_display_set_color_format(lcd_disp, LV_COLOR_FORMAT_RGB565_SWAPPED);
+    lv_display_set_color_format(lcd_disp, LV_COLOR_FORMAT_RGB565_SWAPPED);
     homescreen_init();
 
     for (;;) {
