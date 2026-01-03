@@ -70,6 +70,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     Core/Src/display.c
     Core/Src/homescreen.c
+    fonts/custom_font_montserrat_44.c
+    fonts/custom_font_montserrat_34.c
+    fonts/custom_font_montserrat_18.c
 )
 
 
@@ -78,6 +81,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/lvgl/
     # Add user defined include paths'
     Core/Inc/
+    fonts/Inc/
 )
 
 # Add project symbols (macros)

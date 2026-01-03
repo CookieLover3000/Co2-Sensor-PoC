@@ -1,6 +1,7 @@
 #include "homescreen.h"
 #include <src/display/lv_display.h>
 #include <src/misc/lv_color.h>
+#include "custom_fonts.h"
 
 static lv_obj_t *homescreen_screen = NULL;
 
@@ -56,7 +57,7 @@ static void homescreen_init_co2(void)
     lv_obj_set_align(homescreen_co2_value_label, LV_ALIGN_CENTER);
     lv_obj_set_style_text_color(homescreen_co2_value_label, lv_color_white(), LV_PART_MAIN);
     lv_label_set_text(homescreen_co2_value_label, "1000");
-    lv_obj_set_style_text_font(homescreen_co2_value_label, &lv_font_montserrat_44, LV_PART_MAIN);
+    lv_obj_set_style_text_font(homescreen_co2_value_label, &custom_font_montserrat_44, LV_PART_MAIN);
 
     homescreen_co2_symbol_label = lv_label_create(homescreen_co2_arc);
     lv_obj_set_width(homescreen_co2_symbol_label, LV_SIZE_CONTENT);  /// 1
@@ -67,7 +68,7 @@ static void homescreen_init_co2(void)
     lv_label_set_text(homescreen_co2_symbol_label, "PPM");
     lv_obj_set_style_text_color(homescreen_co2_symbol_label, lv_color_white(), LV_PART_MAIN);
     lv_obj_set_style_text_opa(homescreen_co2_symbol_label, 255, LV_PART_MAIN);
-    lv_obj_set_style_text_font(homescreen_co2_symbol_label, &lv_font_montserrat_18, LV_PART_MAIN);
+    lv_obj_set_style_text_font(homescreen_co2_symbol_label, &custom_font_montserrat_18, LV_PART_MAIN);
 }
 
 static void homescreen_init_temp(void)
@@ -93,7 +94,7 @@ static void homescreen_init_temp(void)
     lv_obj_set_align(homescreen_temp_value_label, LV_ALIGN_CENTER);
     lv_obj_set_style_text_color(homescreen_temp_value_label, lv_color_white(), LV_PART_MAIN);
     lv_label_set_text(homescreen_temp_value_label, "19.5");
-    lv_obj_set_style_text_font(homescreen_temp_value_label, &lv_font_montserrat_34, LV_PART_MAIN);
+    lv_obj_set_style_text_font(homescreen_temp_value_label, &custom_font_montserrat_34, LV_PART_MAIN);
 
     homescreen_temp_symbol_label = lv_label_create(homescreen_temp_arc);
     lv_obj_set_width(homescreen_temp_symbol_label, LV_SIZE_CONTENT);
@@ -104,7 +105,7 @@ static void homescreen_init_temp(void)
     lv_label_set_text(homescreen_temp_symbol_label, "°C");
     lv_obj_set_style_text_color(homescreen_temp_symbol_label, lv_color_white(), 0);
     lv_obj_set_style_text_opa(homescreen_temp_symbol_label, 255, 0);
-    lv_obj_set_style_text_font(homescreen_temp_symbol_label, &lv_font_montserrat_18, LV_PART_MAIN);
+    lv_obj_set_style_text_font(homescreen_temp_symbol_label, &custom_font_montserrat_18, LV_PART_MAIN);
 }
 
 static void homescreen_init_humidity(void)
@@ -130,7 +131,7 @@ static void homescreen_init_humidity(void)
     lv_obj_set_align(homescreen_humidity_value_label, LV_ALIGN_CENTER);
     lv_obj_set_style_text_color(homescreen_humidity_value_label, lv_color_white(), LV_PART_MAIN);
     lv_label_set_text(homescreen_humidity_value_label, "46");
-    lv_obj_set_style_text_font(homescreen_humidity_value_label, &lv_font_montserrat_34,
+    lv_obj_set_style_text_font(homescreen_humidity_value_label, &custom_font_montserrat_34,
                                LV_PART_MAIN);
 
     homescreen_humidity_symbol_label = lv_label_create(homescreen_humidity_arc);
@@ -142,7 +143,7 @@ static void homescreen_init_humidity(void)
     lv_label_set_text(homescreen_humidity_symbol_label, "%");
     lv_obj_set_style_text_color(homescreen_humidity_symbol_label, lv_color_white(), LV_PART_MAIN);
     lv_obj_set_style_text_opa(homescreen_humidity_symbol_label, 255, 0);
-    lv_obj_set_style_text_font(homescreen_humidity_symbol_label, &lv_font_montserrat_18,
+    lv_obj_set_style_text_font(homescreen_humidity_symbol_label, &custom_font_montserrat_18,
                                LV_PART_MAIN);
 }
 
