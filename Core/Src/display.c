@@ -7,10 +7,25 @@
 #include <src/misc/lv_color.h>
 #include <stdint.h>
 
+/* Private defines */
+#define DRAW_BUF_SIZE (LCD_H_RES * LCD_V_RES / 10 * 2) // *2 for 16-bit color depth
+
+#define LCD_H_RES             320
+#define LCD_V_RES             480
+#define BUS_SPI1_POLL_TIMEOUT 0x1000U
+
+#define BYTES_PER_PIXEL       (LV_COLOR_FORMAT_GET_SIZE(LV_COLOR_FORMAT_RGB565))
+#define BUFF_SIZE             (LCD_V_RES * 10 * BYTES_PER_PIXEL)
+/* End Private defines */
+
 /* Private variables */
 extern SPI_HandleTypeDef hspi1;
 lv_display_t *lcd_disp;
-volatile int lcd_bus_busy = 0;
+static volatile int lcd_bus_busy = 0;
+
+// lvgl draw buffers. Aligned to 32-byte boundary as this is apparently best practice for DMA.
+static uint8_t buf1[DRAW_BUF_SIZE] __attribute__((aligned(32)));
+static uint8_t buf2[DRAW_BUF_SIZE] __attribute__((aligned(32)));
 /* End Private variables */
 
 /* Function Prototypes */
@@ -138,19 +153,6 @@ void LVGL_Task(void *argument)
         lv_st7796_create(LCD_H_RES, LCD_V_RES, LV_LCD_FLAG_BGR, lcd_send_cmd, lcd_send_color);
     lv_display_set_rotation(lcd_disp, LV_DISPLAY_ROTATION_90);
 
-    /* Allocate draw buffers on the heap. In this example we use two partial buffers of 1/10th size
-     * of the screen */
-    lv_color_t *buf1 = NULL;
-    // lv_color_t *buf2 = NULL;
-
-    uint32_t buf_size = LCD_H_RES * LCD_V_RES / 10 *
-                        lv_color_format_get_size(lv_display_get_color_format(lcd_disp));
-
-    buf1 = lv_malloc(buf_size);
-    if (buf1 == NULL) {
-        LV_LOG_ERROR("display draw buffer malloc failed");
-        return;
-    }
 
     // buf2 = lv_malloc(buf_size);
     // if (buf2 == NULL) {
@@ -158,7 +160,7 @@ void LVGL_Task(void *argument)
     //     lv_free(buf1);
     //     return;
     // }
-    lv_display_set_buffers(lcd_disp, buf1, NULL, buf_size, LV_DISPLAY_RENDER_MODE_PARTIAL);
+    lv_display_set_buffers(lcd_disp, buf1, buf2, sizeof(buf1), LV_DISPLAY_RENDER_MODE_PARTIAL);
     // lv_display_set_color_format(lcd_disp, LV_COLOR_FORMAT_RGB565_SWAPPED);
     homescreen_init();
 
