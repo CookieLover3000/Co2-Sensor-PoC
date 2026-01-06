@@ -8,19 +8,20 @@
 #include <string.h>
 
 typedef struct {
-    lv_color_t co2_dangerous;
-    lv_color_t co2_warning;
-    lv_color_t co2_safe;
-    lv_color_t temperature;
-    lv_color_t humidity;
+    const lv_color_t co2_dangerous;
+    const lv_color_t co2_warning;
+    const lv_color_t co2_safe;
+    const lv_color_t temperature;
+    const lv_color_t humidity;
 
 } HomescreenColors;
 
-const HomescreenColors homescreen_status_colors = {.co2_dangerous = LV_COLOR_MAKE(0xEC, 0x1C, 0x24),
-                                                   .co2_warning = LV_COLOR_MAKE(0xF0, 0x5A, 0x28),
-                                                   .co2_safe = LV_COLOR_MAKE(0x37, 0xB3, 0x4A),
-                                                   .temperature = LV_COLOR_MAKE(0xF6, 0x92, 0x1E),
-                                                   .humidity = LV_COLOR_MAKE(0x00, 0xAD, 0xEE)
+static const HomescreenColors homescreen_status_colors = {
+    .co2_dangerous = LV_COLOR_MAKE(0xEC, 0x1C, 0x24),
+    .co2_warning = LV_COLOR_MAKE(0xF0, 0x5A, 0x28),
+    .co2_safe = LV_COLOR_MAKE(0x37, 0xB3, 0x4A),
+    .temperature = LV_COLOR_MAKE(0xF6, 0x92, 0x1E),
+    .humidity = LV_COLOR_MAKE(0x00, 0xAD, 0xEE)
 
 };
 
@@ -46,18 +47,30 @@ typedef struct {
     lv_obj_t *symbol_label;
     WidgetType type;
     Monitor monitor;
+    lv_color_t active_color;
 } WidgetData;
 
-static WidgetData main_widget = {
-    .arc = NULL, .value_label = NULL, .symbol_label = NULL, .type = MAIN, .monitor = CO2};
-static WidgetData upper_widget = {
-    .arc = NULL, .value_label = NULL, .symbol_label = NULL, .type = UPPER, .monitor = TEMPERATURE};
-static WidgetData lower_widget = {
-    .arc = NULL, .value_label = NULL, .symbol_label = NULL, .type = LOWER, .monitor = HUMIDITY};
+static WidgetData main_widget = {.arc = NULL,
+                                 .value_label = NULL,
+                                 .symbol_label = NULL,
+                                 .type = MAIN,
+                                 .monitor = CO2,
+                                 .active_color = homescreen_status_colors.co2_dangerous};
+static WidgetData upper_widget = {.arc = NULL,
+                                  .value_label = NULL,
+                                  .symbol_label = NULL,
+                                  .type = UPPER,
+                                  .monitor = TEMPERATURE,
+                                  .active_color = homescreen_status_colors.temperature};
+static WidgetData lower_widget = {.arc = NULL,
+                                  .value_label = NULL,
+                                  .symbol_label = NULL,
+                                  .type = LOWER,
+                                  .monitor = HUMIDITY,
+                                  .active_color = homescreen_status_colors.humidity};
 
 /* Function prototypes */
 static void homescreen_init_widget(WidgetData *widget);
-
 
 void homescreen_init(void)
 {
@@ -99,7 +112,7 @@ static void homescreen_init_widget(WidgetData *widget)
     case MAIN:
         lv_obj_set_align(widget->arc, LV_ALIGN_LEFT_MID);
         lv_obj_set_style_text_font(widget->value_label, &custom_font_montserrat_44, LV_PART_MAIN);
-        lv_obj_set_style_text_font(widget->symbol_label, &lv_font_montserrat_22,
+        lv_obj_set_style_text_font(widget->symbol_label, &custom_font_montserrat_22,
                                    LV_PART_MAIN); // TODO: Change this to a custom font
         lv_obj_set_width(widget->arc, 213);
         lv_obj_set_height(widget->arc, 213);

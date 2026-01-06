@@ -73,6 +73,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     fonts/custom_font_montserrat_44.c
     fonts/custom_font_montserrat_34.c
     fonts/custom_font_montserrat_18.c
+    fonts/custom_font_montserrat_22.c
 )
 
 
