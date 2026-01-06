@@ -1,6 +1,7 @@
 #include "homescreen.h"
 #include "cmsis_os2.h"
 #include "custom_fonts.h"
+#include "homescreen_anim.h"
 #include <src/display/lv_display.h>
 #include <src/font/lv_font.h>
 #include <src/misc/lv_color.h>
@@ -71,6 +72,7 @@ static WidgetData lower_widget = {.arc = NULL,
 
 /* Function prototypes */
 static void homescreen_init_widget(WidgetData *widget);
+static void homescreen_change_widget(WidgetData *widget, Monitor new_monitor);
 
 void homescreen_init(void)
 {
@@ -102,8 +104,8 @@ static void homescreen_init_widget(WidgetData *widget)
     lv_obj_set_style_text_color(widget->value_label, lv_color_white(), LV_PART_MAIN);
 
     widget->symbol_label = lv_label_create(widget->arc);
-    lv_obj_set_width(widget->symbol_label, LV_SIZE_CONTENT);  /// 1
-    lv_obj_set_height(widget->symbol_label, LV_SIZE_CONTENT); /// 1
+    lv_obj_set_width(widget->symbol_label, LV_SIZE_CONTENT);
+    lv_obj_set_height(widget->symbol_label, LV_SIZE_CONTENT);
     lv_obj_set_align(widget->symbol_label, LV_ALIGN_BOTTOM_MID);
     lv_obj_set_style_text_color(widget->symbol_label, lv_color_white(), LV_PART_MAIN);
     lv_obj_set_style_text_opa(widget->symbol_label, 255, LV_PART_MAIN);
@@ -112,8 +114,7 @@ static void homescreen_init_widget(WidgetData *widget)
     case MAIN:
         lv_obj_set_align(widget->arc, LV_ALIGN_LEFT_MID);
         lv_obj_set_style_text_font(widget->value_label, &custom_font_montserrat_44, LV_PART_MAIN);
-        lv_obj_set_style_text_font(widget->symbol_label, &custom_font_montserrat_22,
-                                   LV_PART_MAIN); // TODO: Change this to a custom font
+        lv_obj_set_style_text_font(widget->symbol_label, &custom_font_montserrat_22, LV_PART_MAIN);
         lv_obj_set_width(widget->arc, 213);
         lv_obj_set_height(widget->arc, 213);
         lv_obj_set_x(widget->arc, 66);
@@ -173,6 +174,34 @@ static void homescreen_init_widget(WidgetData *widget)
         lv_label_set_text(widget->value_label, "46");
         lv_label_set_text(widget->symbol_label, "%");
         break;
+    }
+}
+
+static void homescreen_change_widget(WidgetData *widget, Monitor new_monitor)
+{
+    lv_color_t old_color = widget->active_color;
+    widget->monitor = new_monitor;
+
+    switch (new_monitor) {
+    case CO2:
+        homescreen_anim_update_label_text_fade(widget->value_label, "1000", 0);
+        homescreen_anim_update_label_text_fade(widget->symbol_label, "PPM", 0);
+        homescreen_anim_change_arc_color(widget->arc, old_color,
+                                         homescreen_status_colors.co2_dangerous,
+                                         LABEL_FADE_ANIM_DURATION_MS + ARC_COLOR_SWAP_DELAY);
+        break;
+    case TEMPERATURE:
+        homescreen_anim_update_label_text_fade(widget->value_label, "19.5", 0);
+        homescreen_anim_update_label_text_fade(widget->symbol_label, "°C", 0);
+        homescreen_anim_change_arc_color(widget->arc, old_color,
+                                         homescreen_status_colors.temperature,
+                                         LABEL_FADE_ANIM_DURATION_MS + ARC_COLOR_SWAP_DELAY);
+        break;
+    case HUMIDITY:
+        homescreen_anim_update_label_text_fade(widget->value_label, "46", 0);
+        homescreen_anim_update_label_text_fade(widget->symbol_label, "%", 0);
+        homescreen_anim_change_arc_color(widget->arc, old_color, homescreen_status_colors.humidity,
+                                         LABEL_FADE_ANIM_DURATION_MS + ARC_COLOR_SWAP_DELAY);
     }
 }
 
