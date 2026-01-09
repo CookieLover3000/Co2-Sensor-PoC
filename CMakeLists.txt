@@ -71,6 +71,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/display.c
     Core/Src/homescreen.c
     Core/Src/homescreen_anim.c
+    Core/Src/scd40.c
     fonts/custom_font_montserrat_44.c
     fonts/custom_font_montserrat_34.c
     fonts/custom_font_montserrat_18.c
