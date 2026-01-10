@@ -237,7 +237,7 @@ void homescreen_update_sensor_values()
     }
 }
 
-static void homescreen_change_widget(Widget_t *widget, Monitor new_monitor)
+__attribute__((unused)) static void homescreen_change_widget(Widget_t *widget, Monitor new_monitor)
 {
     lv_color_t old_color = widget->active_color;
     widget->monitor = new_monitor;
