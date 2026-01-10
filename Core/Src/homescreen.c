@@ -2,11 +2,17 @@
 #include "cmsis_os2.h"
 #include "custom_fonts.h"
 #include "homescreen_anim.h"
+#include "scd40.h"
+
 #include <src/display/lv_display.h>
 #include <src/font/lv_font.h>
 #include <src/misc/lv_color.h>
 #include <src/misc/lv_types.h>
 #include <string.h>
+
+#define WIDGET_AMOUNT 3
+
+extern osMessageQueueId_t scd40QueueHandle;
 
 typedef struct {
     const lv_color_t co2_dangerous;
@@ -49,30 +55,32 @@ typedef struct {
     WidgetType type;
     Monitor monitor;
     lv_color_t active_color;
-} WidgetData;
+} Widget_t;
 
-static WidgetData main_widget = {.arc = NULL,
-                                 .value_label = NULL,
-                                 .symbol_label = NULL,
-                                 .type = MAIN,
-                                 .monitor = CO2,
-                                 .active_color = homescreen_status_colors.co2_dangerous};
-static WidgetData upper_widget = {.arc = NULL,
-                                  .value_label = NULL,
-                                  .symbol_label = NULL,
-                                  .type = UPPER,
-                                  .monitor = TEMPERATURE,
-                                  .active_color = homescreen_status_colors.temperature};
-static WidgetData lower_widget = {.arc = NULL,
-                                  .value_label = NULL,
-                                  .symbol_label = NULL,
-                                  .type = LOWER,
-                                  .monitor = HUMIDITY,
-                                  .active_color = homescreen_status_colors.humidity};
+static Widget_t main_widget = {.arc = NULL,
+                               .value_label = NULL,
+                               .symbol_label = NULL,
+                               .type = MAIN,
+                               .monitor = CO2,
+                               .active_color = homescreen_status_colors.co2_dangerous};
+static Widget_t upper_widget = {.arc = NULL,
+                                .value_label = NULL,
+                                .symbol_label = NULL,
+                                .type = UPPER,
+                                .monitor = TEMPERATURE,
+                                .active_color = homescreen_status_colors.temperature};
+static Widget_t lower_widget = {.arc = NULL,
+                                .value_label = NULL,
+                                .symbol_label = NULL,
+                                .type = LOWER,
+                                .monitor = HUMIDITY,
+                                .active_color = homescreen_status_colors.humidity};
 
 /* Function prototypes */
-static void homescreen_init_widget(WidgetData *widget);
-static void homescreen_change_widget(WidgetData *widget, Monitor new_monitor);
+static void homescreen_init_widget(Widget_t *widget);
+static void update_widget_label(Widget_t *widget, const char *co2, const char *temp,
+                                const char *hum);
+// static void homescreen_change_widget(WidgetData *widget, Monitor new_monitor);
 
 void homescreen_init(void)
 {
@@ -86,7 +94,7 @@ void homescreen_init(void)
     homescreen_init_widget(&lower_widget);
 }
 
-static void homescreen_init_widget(WidgetData *widget)
+static void homescreen_init_widget(Widget_t *widget)
 {
     // values between 400-600 are safe. Above 600 is bad and above 1000 really bad.
     widget->arc = lv_arc_create(homescreen_screen);
@@ -177,7 +185,54 @@ static void homescreen_init_widget(WidgetData *widget)
     }
 }
 
-static void homescreen_change_widget(WidgetData *widget, Monitor new_monitor)
+static void update_widget_label(Widget_t *widget, const char *co2, const char *temp,
+                                const char *hum)
+{
+    if (widget == NULL || widget->value_label == NULL)
+        return;
+
+    switch (widget->monitor) {
+    case CO2:
+        lv_label_set_text(widget->value_label, co2);
+        break;
+    case TEMPERATURE:
+        lv_label_set_text(widget->value_label, temp);
+        break;
+    case HUMIDITY:
+        lv_label_set_text(widget->value_label, hum);
+        break;
+    }
+}
+
+void homescreen_update_sensor_values()
+{
+    scd40Data_t receivedData = {0};
+    char co2_string[6];
+    char temperature_string[12];
+    char humidity_string[10];
+
+    if (scd40QueueHandle == NULL)
+        return;
+
+    if (osMessageQueueGet(scd40QueueHandle, &receivedData, NULL, 0) == osOK) {
+
+        uint16_t temp_int = (uint16_t)receivedData.temperature;
+        uint16_t temp_dec = (uint16_t)((receivedData.temperature - temp_int) * 10);
+        uint16_t humid_int = (uint16_t)receivedData.humidity;
+
+        snprintf(co2_string, sizeof(co2_string), "%u", receivedData.co2);
+        snprintf(temperature_string, sizeof(temperature_string), "%d.%d", temp_int, temp_dec);
+        snprintf(humidity_string, sizeof(humidity_string), "%u", humid_int);
+
+        Widget_t *widgets[] = {&main_widget, &upper_widget, &lower_widget};
+
+        for (uint8_t i = 0; i < WIDGET_AMOUNT; i++) {
+            update_widget_label(widgets[i], co2_string, temperature_string, humidity_string);
+        }
+    }
+}
+
+static void homescreen_change_widget(Widget_t *widget, Monitor new_monitor)
 {
     lv_color_t old_color = widget->active_color;
     widget->monitor = new_monitor;
