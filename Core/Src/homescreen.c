@@ -9,9 +9,12 @@
 #include <src/font/lv_font.h>
 #include <src/misc/lv_color.h>
 #include <src/misc/lv_types.h>
+#include <stdint.h>
 #include <string.h>
 
-#define WIDGET_AMOUNT 3
+#define WIDGET_AMOUNT       3
+#define CO2_DANGEROUS_VALUE 1000
+#define CO2_WARNING_VALUE   750
 
 extern osMessageQueueId_t scd40QueueHandle;
 
@@ -22,9 +25,9 @@ typedef struct {
     const lv_color_t temperature;
     const lv_color_t humidity;
 
-} HomescreenColors;
+} HomescreenColors_t;
 
-static const HomescreenColors homescreen_status_colors = {
+static const HomescreenColors_t homescreen_status_colors = {
     .co2_dangerous = LV_COLOR_MAKE(0xEC, 0x1C, 0x24),
     .co2_warning = LV_COLOR_MAKE(0xF0, 0x5A, 0x28),
     .co2_safe = LV_COLOR_MAKE(0x37, 0xB3, 0x4A),
@@ -80,8 +83,8 @@ static Widget_t lower_widget = {.arc = NULL,
 /* Function prototypes */
 static void homescreen_init_widget(Widget_t *widget);
 static void update_widget_label(Widget_t *widget, const char *co2, const char *temp,
-                                const char *hum);
-// static void homescreen_change_widget(WidgetData *widget, Monitor new_monitor);
+                                const char *hum, uint16_t co2_value);
+static void homescreen_change_widget(Widget_t *widget, Monitor new_monitor);
 
 void homescreen_init(void)
 {
@@ -191,7 +194,7 @@ static void homescreen_init_widget(Widget_t *widget)
 }
 
 static void update_widget_label(Widget_t *widget, const char *co2, const char *temp,
-                                const char *hum)
+                                const char *hum, uint16_t co2_value)
 {
     if (widget == NULL || widget->value_label == NULL)
         return;
@@ -199,6 +202,23 @@ static void update_widget_label(Widget_t *widget, const char *co2, const char *t
     switch (widget->monitor) {
     case CO2:
         lv_label_set_text(widget->value_label, co2);
+        if (co2_value >= CO2_DANGEROUS_VALUE &&
+            !lv_color_eq(widget->active_color, homescreen_status_colors.co2_dangerous)) {
+            homescreen_anim_change_arc_color(widget->arc, widget->active_color,
+                                             homescreen_status_colors.co2_dangerous, 0);
+            widget->active_color = homescreen_status_colors.co2_dangerous;
+        } else if (co2_value >= CO2_WARNING_VALUE &&
+                   !lv_color_eq(widget->active_color, homescreen_status_colors.co2_warning)) {
+            homescreen_anim_change_arc_color(widget->arc, widget->active_color,
+                                             homescreen_status_colors.co2_warning, 0);
+            widget->active_color = homescreen_status_colors.co2_warning;
+        } else if(co2_value < CO2_WARNING_VALUE &&
+                   !lv_color_eq(widget->active_color, homescreen_status_colors.co2_safe)){
+            homescreen_anim_change_arc_color(widget->arc, widget->active_color,
+                                             homescreen_status_colors.co2_safe, 0);
+            widget->active_color = homescreen_status_colors.co2_safe;
+        }
+
         break;
     case TEMPERATURE:
         lv_label_set_text(widget->value_label, temp);
@@ -211,7 +231,7 @@ static void update_widget_label(Widget_t *widget, const char *co2, const char *t
 
 void homescreen_update_sensor_values()
 {
-    scd40Data_t receivedData = {0};
+    scd40Data_t received_data = {0};
     char co2_string[6];
     char temperature_string[12];
     char humidity_string[10];
@@ -219,20 +239,21 @@ void homescreen_update_sensor_values()
     if (scd40QueueHandle == NULL)
         return;
 
-    if (osMessageQueueGet(scd40QueueHandle, &receivedData, NULL, 0) == osOK) {
+    if (osMessageQueueGet(scd40QueueHandle, &received_data, NULL, 0) == osOK) {
 
-        uint16_t temp_int = (uint16_t)receivedData.temperature;
-        uint16_t temp_dec = (uint16_t)((receivedData.temperature - temp_int) * 10);
-        uint16_t humid_int = (uint16_t)receivedData.humidity;
+        uint16_t temp_int = (uint16_t)received_data.temperature;
+        uint16_t temp_dec = (uint16_t)((received_data.temperature - temp_int) * 10);
+        uint16_t humid_int = (uint16_t)received_data.humidity;
 
-        snprintf(co2_string, sizeof(co2_string), "%u", receivedData.co2);
+        snprintf(co2_string, sizeof(co2_string), "%u", received_data.co2);
         snprintf(temperature_string, sizeof(temperature_string), "%d.%d", temp_int, temp_dec);
         snprintf(humidity_string, sizeof(humidity_string), "%u", humid_int);
 
         Widget_t *widgets[] = {&main_widget, &upper_widget, &lower_widget};
 
         for (uint8_t i = 0; i < WIDGET_AMOUNT; i++) {
-            update_widget_label(widgets[i], co2_string, temperature_string, humidity_string);
+            update_widget_label(widgets[i], co2_string, temperature_string, humidity_string,
+                                received_data.co2);
         }
     }
 }
