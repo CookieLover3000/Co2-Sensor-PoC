@@ -9,23 +9,25 @@
 extern I2C_HandleTypeDef hi2c1;
 
 osMessageQueueId_t scd40QueueHandle;
-
-const osMessageQueueAttr_t scd40Qeue_attributes = {.name = "co2 Queue"};
+const osMessageQueueAttr_t scd40Queue_attributes = {.name = "co2 Queue"};
 
 osThreadId_t scd40TaskHandle;
 const osThreadAttr_t Scd40TaskHandle_attributes = {
     .name = "scd40Task", .priority = (osPriority_t)osPriorityAboveNormal, .stack_size = 2048};
 
+scd40Data_t scd40Data = {0};
+
 static uint8_t calculate_crc8(uint8_t *data, size_t length);
 static void scd40_task(void *arg);
 
+
 void scd40_initSensor()
 {
+    scd40QueueHandle = osMessageQueueNew(10, sizeof(scd40Data_t), &scd40Queue_attributes);
+
     scd40TaskHandle = osThreadNew(scd40_task, NULL, &Scd40TaskHandle_attributes);
 
     if (scd40TaskHandle == NULL) {
-        /* ERROR: The task was NOT created.
-           Execution will never reach the StartLvglTask function. */
         Error_Handler();
     }
 }
@@ -34,7 +36,8 @@ void scd40_initSensor()
 // As the blocking commands might interfere with the ui task.
 static void scd40_task(void *arg)
 {
-    uint16_t scd40_address = (0x62 << 1); // bit shift 7 bit address to 8 bits as that is what the stm32 HAL expects.
+    uint16_t scd40_address =
+        (0x62 << 1); // bit shift 7 bit address to 8 bits as that is what the stm32 HAL expects.
     uint8_t start_periodic_measurement[READ_MEASUREMENT_SIZE] = {0x21, 0xb1};
     uint8_t read_measurement[READ_MEASUREMENT_SIZE] = {0xec, 0x05};
 
@@ -49,33 +52,29 @@ static void scd40_task(void *arg)
         if (HAL_I2C_Master_Transmit(&hi2c1, scd40_address, read_measurement, READ_MEASUREMENT_SIZE,
                                     100) == HAL_OK) {
             osDelay(1);
-            scd40Data_t new_data = {0};
 
             if (HAL_I2C_Master_Receive(&hi2c1, scd40_address, raw_data, 9, 100) == HAL_OK) {
-                // Parse your data here (remember to skip the CRC bytes at index 2, 5, and 8)
                 if (calculate_crc8(&raw_data[0], 2) == raw_data[2]) {
-                    new_data.co2 = (raw_data[0] << 8) | raw_data[1];
+                    scd40Data.co2 = (raw_data[0] << 8) | raw_data[1];
                 } else {
                     // TODO: Implement error handling
                 }
 
-                // 2. Validate Temperature CRC (Bytes 3 and 4)
                 if (calculate_crc8(&raw_data[3], 2) == raw_data[5]) {
                     uint16_t temp_raw = (raw_data[3] << 8) | raw_data[4];
-                    new_data.temperature = -45.0f + 175.0f * (float)temp_raw / 65536.0f;
+                    scd40Data.temperature = -45.0f + 175.0f * (float)temp_raw / 65536.0f;
                 } else {
                     // TODO: Implement error handling
                 }
 
-                // 3. Validate Humidity CRC (Bytes 6 and 7)
                 if (calculate_crc8(&raw_data[6], 2) == raw_data[8]) {
                     uint16_t humid_raw = (raw_data[6] << 8) | raw_data[7];
-                    new_data.humidity = 100.0f * (float)humid_raw / 65536.0f;
+                    scd40Data.humidity = 100.0f * (float)humid_raw / 65536.0f;
                 } else {
                     // TODO: Implement error handling
                 }
             }
-            osMessageQueuePut(scd40QueueHandle, &new_data, 0U, 0U);
+            osMessageQueuePut(scd40QueueHandle, &scd40Data, 0U, 0U);
         }
 
         osDelay(5000);
