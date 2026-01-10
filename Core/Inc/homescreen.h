@@ -6,5 +6,6 @@
 
 void homescreen_init(void);
 void homescreen_destroy(void);
+void homescreen_update_sensor_values(void);
 
 #endif /* HOMESCREEN_H */

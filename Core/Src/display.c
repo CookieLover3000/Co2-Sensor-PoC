@@ -156,6 +156,7 @@ void LVGL_Task(void *argument)
     homescreen_init();
 
     for (;;) {
+        homescreen_update_sensor_values();
         /* The task running lv_timer_handler should have lower priority than that running
          * `lv_tick_inc` */
         lv_timer_handler();
