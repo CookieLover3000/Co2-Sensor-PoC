@@ -4,6 +4,7 @@
 #include "homescreen_anim.h"
 #include "scd40.h"
 
+#include <src/core/lv_obj_style.h>
 #include <src/display/lv_display.h>
 #include <src/font/lv_font.h>
 #include <src/misc/lv_color.h>
@@ -136,6 +137,8 @@ static void homescreen_init_widget(Widget_t *widget)
         lv_obj_set_style_text_font(widget->symbol_label, &custom_font_montserrat_18, LV_PART_MAIN);
         lv_obj_set_width(widget->arc, 134);
         lv_obj_set_height(widget->arc, 134);
+        lv_obj_set_style_arc_width(widget->arc, 8, LV_PART_MAIN);
+        lv_obj_set_style_arc_width(widget->arc, 8, LV_PART_INDICATOR);
         lv_obj_set_x(widget->arc, -66);
         lv_obj_set_y(widget->arc, -77);
         lv_obj_set_x(widget->symbol_label, 0);
@@ -147,6 +150,8 @@ static void homescreen_init_widget(Widget_t *widget)
         lv_obj_set_style_text_font(widget->symbol_label, &custom_font_montserrat_18, LV_PART_MAIN);
         lv_obj_set_width(widget->arc, 134);
         lv_obj_set_height(widget->arc, 134);
+        lv_obj_set_style_arc_width(widget->arc, 8, LV_PART_MAIN);
+        lv_obj_set_style_arc_width(widget->arc, 8, LV_PART_INDICATOR);
         lv_obj_set_x(widget->arc, -66);
         lv_obj_set_y(widget->arc, 77);
         lv_obj_set_x(widget->symbol_label, 0);
