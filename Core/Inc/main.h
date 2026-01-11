@@ -77,10 +77,15 @@ void Error_Handler(void);
 #define LCD_RST_GPIO_Port       GPIOC
 #define LCD_SCK_Pin             GPIO_PIN_1
 #define LCD_SCK_GPIO_Port       GPIOA
+#define TOUCH_INT_Pin           GPIO_PIN_5
+#define TOUCH_INT_GPIO_Port     GPIOA
+#define TOUCH_INT_EXTI_IRQn     EXTI9_5_IRQn
 #define LCD_BL_Pin              GPIO_PIN_6
 #define LCD_BL_GPIO_Port        GPIOA
 #define LCD_SDI_Pin             GPIO_PIN_7
 #define LCD_SDI_GPIO_Port       GPIOA
+#define TOUCH_RST_Pin           GPIO_PIN_8
+#define TOUCH_RST_GPIO_Port     GPIOA
 #define USB_DM_Pin              GPIO_PIN_11
 #define USB_DM_GPIO_Port        GPIOA
 #define USB_DP_Pin              GPIO_PIN_12
