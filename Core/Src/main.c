@@ -121,7 +121,7 @@ int main(void)
     MX_TIM16_Init();
     MX_RF_Init();
     /* USER CODE BEGIN 2 */
-    
+
     /* USER CODE END 2 */
 
     /* Init scheduler */
@@ -503,9 +503,6 @@ static void MX_GPIO_Init(void)
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(GPIOC, LCD_DC_Pin | LCD_RST_Pin, GPIO_PIN_SET);
 
-    /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(LCD_BL_OLD_GPIO_Port, LCD_BL_OLD_Pin, GPIO_PIN_RESET);
-
     /*Configure GPIO pins : LCD_CS_Pin LCD_DC_Pin */
     GPIO_InitStruct.Pin = LCD_CS_Pin | LCD_DC_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -519,13 +516,6 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(LCD_RST_GPIO_Port, &GPIO_InitStruct);
-
-    /*Configure GPIO pin : LCD_BL_OLD_Pin */
-    GPIO_InitStruct.Pin = LCD_BL_OLD_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    HAL_GPIO_Init(LCD_BL_OLD_GPIO_Port, &GPIO_InitStruct);
 
     /*Configure GPIO pins : USB_DM_Pin USB_DP_Pin */
     GPIO_InitStruct.Pin = USB_DM_Pin | USB_DP_Pin;
