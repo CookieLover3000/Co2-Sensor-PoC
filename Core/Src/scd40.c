@@ -1,7 +1,7 @@
 #include "scd40.h"
 #include "cmsis_os2.h"
 #include "main.h"
-#include "stm32wbxx_hal.h"
+#include "stm32wbxx_hal_i2c.h"
 
 #define WRITE_MEASUREMENT_COMMAND_SIZE 2
 #define READ_MEASUREMENT_SIZE          2
