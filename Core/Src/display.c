@@ -3,6 +3,7 @@
 #include "cmsis_os.h"
 #include "homescreen.h"
 #include "main.h"
+#include "stm32wbxx_hal_tim.h"
 
 #include <src/misc/lv_color.h>
 #include <stdint.h>
@@ -20,6 +21,7 @@
 
 /* Private variables */
 extern SPI_HandleTypeDef hspi1;
+extern TIM_HandleTypeDef htim16;
 lv_display_t *lcd_disp;
 static volatile int lcd_bus_busy = 0;
 
@@ -43,9 +45,15 @@ const osThreadAttr_t LvglTaskHandle_attributes = {
     .name = "LvglTask", .priority = (osPriority_t)osPriorityAboveNormal6, .stack_size = 8192};
 /* End Task Handles */
 
+static void init_backlight()
+{
+    display_setbacklight_brightness(100);
+    HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+}
+
 void display_initLvgl(void)
 {
-    HAL_GPIO_WritePin(LCD_BL_GPIO_Port, LCD_BL_Pin, GPIO_PIN_SET);
+    init_backlight();
 
     LvglTaskHandle = osThreadNew(LVGL_Task, NULL, &LvglTaskHandle_attributes);
 
@@ -135,6 +143,17 @@ static void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_si
         }
         /* NOTE: CS will be reset in the transfer ready callback */
     }
+}
+
+void display_setbacklight_brightness(uint8_t percentage)
+{
+    if (percentage > 100) {
+        percentage = 100;
+    }
+
+    uint32_t compare_value = (percentage * (htim16.Instance->ARR + 1) / 100);
+
+    __HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, compare_value);
 }
 
 void LVGL_Task(void *argument)
