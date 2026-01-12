@@ -8,7 +8,9 @@ class app_main {
 }
 namespace App {
     class DisplayHandler {
-
+        - DisplayScreenBase* currentScreen
+        + void setScreen(DisplayScreenBase* newScreen)
+        + void update()
     }
     class TouchHandler {
 
@@ -16,21 +18,16 @@ namespace App {
     class SensorHandler {
 
     }
-    Interface DisplayScreenBase <<interface>>{
-
-    }
-    interface DisplayDriverBase <<interface>>{
-
-    }
-    interface TouchDriverBase <<interface>>{
-
-    }
-    interface SensorDriverBase <<interface>>{
-
-    }
 }
 
-namespace Display {
+namespace UI {
+
+    Interface DisplayScreenBase <<interface>>{
+        + {abstract} void init()
+        + {abstract} void update()
+        + {abstract} void destroy()
+    }
+    
     class Bootscreen {
 
     }
@@ -43,6 +40,19 @@ namespace Display {
 }
 
 namespace Drivers {
+
+    interface DisplayDriverBase <<interface>>{
+
+    }
+
+    interface TouchDriverBase <<interface>>{
+
+    }
+
+    interface SensorDriverBase <<interface>>{
+
+    }
+
     namespace SPI {
         class ST7796 {
 
@@ -67,7 +77,7 @@ app_main --> TouchHandler
 app_main --> SensorHandler
 
 DisplayHandler --> DisplayDriverBase
-DisplayHandler --> DisplayScreenBase
+DisplayHandler o-- DisplayScreenBase
 DisplayScreenBase <|-- Homescreen
 DisplayScreenBase <|-- SettingsScreen
 DisplayScreenBase <|-- Bootscreen

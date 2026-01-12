@@ -1,9 +1,8 @@
 #include "DisplayHandler.hpp"
+#include "DisplayDriverBase.hpp"
 #include "DisplayScreenBase.hpp"
-
+#include "ST7796.hpp"
 #include "cmsis_os.h"
-#include "display.h"
-// #include "DisplayDriverBase.hpp"
 #include "main.h"
 #include <homescreen.hpp>
 
@@ -21,10 +20,6 @@ using namespace App;
 
 void DisplayHandler::init()
 {
-    // if (driver)
-    // {
-    //     driver->lvglDisplayInit();
-    // }
 
     LvglTaskHandle = osThreadNew(DisplayHandler::taskWrapper, this, &LvglTaskHandle_attributes);
 
@@ -51,15 +46,16 @@ void DisplayHandler::taskWrapper(void *argument)
 }
 void DisplayHandler::LVGLTask()
 {
-    /* Initialize LVGL */
-    display_initLvgl();
+    if (driver)
+    {
+        driver->lvglDisplayInit();
+    }
+
     homescreen.init();
 
     for (;;)
     {
         homescreen.update();
-        /* The task running lv_timer_handler should have lower priority than that running
-         * `lv_tick_inc` */
         lv_timer_handler();
 
         osDelay(10);
