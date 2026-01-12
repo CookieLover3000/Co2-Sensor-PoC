@@ -1,49 +1,27 @@
-#include "display.h"
+#include "ST7796.hpp"
 #include "./src/drivers/display/st7796/lv_st7796.h"
 #include "cmsis_os.h"
+#include "lvgl.h"
 #include "main.h"
-#include "stm32wbxx_hal_tim.h"
-
 #include <src/misc/lv_color.h>
-#include <stdint.h>
 
-/* Private defines */
-#define DRAW_BUF_SIZE         (LCD_H_RES * LCD_V_RES / 10 * 2) // *2 for 16-bit color depth
+#include <cstdint>
 
-#define LCD_H_RES             320
-#define LCD_V_RES             480
-#define BUS_SPI1_POLL_TIMEOUT 0x1000U
+using namespace Drivers::SPI;
 
-#define BYTES_PER_PIXEL       (LV_COLOR_FORMAT_GET_SIZE(LV_COLOR_FORMAT_RGB565))
-#define BUFF_SIZE             (LCD_V_RES * 10 * BYTES_PER_PIXEL)
-/* End Private defines */
+uint8_t ST7796::buf1[ST7796::DRAW_BUF_SIZE] __attribute__((aligned(32)));
+uint8_t ST7796::buf2[ST7796::DRAW_BUF_SIZE] __attribute__((aligned(32)));
+ST7796 *ST7796::instance = nullptr;
 
-/* Private variables */
-extern SPI_HandleTypeDef hspi1;
-extern TIM_HandleTypeDef htim16;
-lv_display_t *lcd_disp;
-volatile int lcd_bus_busy = 0;
-
-// lvgl draw buffers. Aligned to 32-byte boundary as this is apparently best practice for DMA.
-uint8_t buf1[DRAW_BUF_SIZE] __attribute__((aligned(32)));
-uint8_t buf2[DRAW_BUF_SIZE] __attribute__((aligned(32)));
-/* End Private variables */
-
-/* Function Prototypes */
-void lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size,
-                         const uint8_t *param, size_t param_size);
-void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, uint8_t *param,
-                           size_t param_size);
-/* End Function Prototypes */
-
-void init_backlight()
+void ST7796::init_backlight()
 {
     display_setbacklight_brightness(100);
-    HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(htim, TIM_CHANNEL_1);
 }
 
-void display_initLvgl(void)
+void ST7796::lvglDisplayInit(void)
 {
+    instance = this;
     init_backlight();
 
     lv_init();
@@ -61,19 +39,19 @@ void display_initLvgl(void)
     lv_display_set_color_format(lcd_disp, LV_COLOR_FORMAT_RGB565_SWAPPED);
 }
 
-void lcd_color_transfer_ready_cb(SPI_HandleTypeDef *hspi)
+void ST7796::lcd_color_transfer_ready_cb(SPI_HandleTypeDef *hspi)
 {
     /* CS high */
     HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
-    lcd_bus_busy = 0;
-    lv_display_flush_ready(lcd_disp);
+    instance->lcd_bus_busy = 0;
+    lv_display_flush_ready(instance->lcd_disp);
 }
 
 /* Initialize LCD I/O bus, reset LCD */
-int32_t lcd_io_init(void)
+int32_t ST7796::lcd_io_init(void)
 {
     /* Register SPI Tx Complete Callback */
-    HAL_SPI_RegisterCallback(&hspi1, HAL_SPI_TX_COMPLETE_CB_ID, lcd_color_transfer_ready_cb);
+    HAL_SPI_RegisterCallback(hspi, HAL_SPI_TX_COMPLETE_CB_ID, lcd_color_transfer_ready_cb);
 
     /* reset LCD */
     HAL_GPIO_WritePin(LCD_RST_GPIO_Port, LCD_RST_Pin, GPIO_PIN_RESET);
@@ -89,11 +67,11 @@ int32_t lcd_io_init(void)
 
 /* Platform-specific implementation of the LCD send command function. In general this should use
  * polling transfer. */
-void lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size,
-                         const uint8_t *param, size_t param_size)
+void ST7796::lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, const uint8_t *param,
+                          size_t param_size)
 {
     LV_UNUSED(disp);
-    while (lcd_bus_busy)
+    while (instance->lcd_bus_busy)
         ; /* wait until previous transfer is finished */
 
     /* DCX low (command) */
@@ -101,11 +79,12 @@ void lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size,
     /* CS low */
     HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);
     /* send command */
-    if (HAL_SPI_Transmit(&hspi1, cmd, cmd_size, BUS_SPI1_POLL_TIMEOUT) == HAL_OK) {
+    if (HAL_SPI_Transmit(instance->hspi, cmd, cmd_size, BUS_SPI1_POLL_TIMEOUT) == HAL_OK)
+    {
         /* DCX high (data) */
         HAL_GPIO_WritePin(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_SET);
         /* for short data blocks we use polling transfer */
-        HAL_SPI_Transmit(&hspi1, (uint8_t *)param, (uint16_t)param_size, BUS_SPI1_POLL_TIMEOUT);
+        HAL_SPI_Transmit(instance->hspi, (uint8_t *)param, (uint16_t)param_size, BUS_SPI1_POLL_TIMEOUT);
         /* CS high */
         HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
     }
@@ -115,11 +94,10 @@ void lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size,
  * should use DMA transfer. In case of a DMA transfer a callback must be installed to notify LVGL
  * about the end of the transfer.
  */
-void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, uint8_t *param,
-                           size_t param_size)
+void ST7796::lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, uint8_t *param, size_t param_size)
 {
     LV_UNUSED(disp);
-    while (lcd_bus_busy)
+    while (instance->lcd_bus_busy)
         ; /* wait until previous transfer is finished */
 
     /* DCX low (command) */
@@ -127,28 +105,32 @@ void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, uin
     /* CS low */
     HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);
     /* send command */
-    if (HAL_SPI_Transmit(&hspi1, cmd, cmd_size, BUS_SPI1_POLL_TIMEOUT) == HAL_OK) {
+    if (HAL_SPI_Transmit(instance->hspi, cmd, cmd_size, BUS_SPI1_POLL_TIMEOUT) == HAL_OK)
+    {
         /* DCX high (data) */
         HAL_GPIO_WritePin(LCD_DC_GPIO_Port, LCD_DC_Pin, GPIO_PIN_SET);
         /* for color data use DMA transfer */
         /* Set the SPI in 16-bit mode to match endianness */
 
-        lcd_bus_busy = 1;
-        if (HAL_SPI_Transmit_DMA(&hspi1, param, (uint16_t)param_size) != HAL_OK) {
-            lcd_bus_busy = 0;
+        instance->lcd_bus_busy = 1;
+        if (HAL_SPI_Transmit_DMA(instance->hspi, param, (uint16_t)param_size) != HAL_OK)
+        {
+            instance->lcd_bus_busy = 0;
             HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
         }
         /* NOTE: CS will be reset in the transfer ready callback */
     }
 }
 
-void display_setbacklight_brightness(uint8_t percentage)
+void ST7796::display_setbacklight_brightness(uint8_t percentage)
 {
-    if (percentage > 100) {
+    // Clamp the value to 100%
+    if (percentage > 100)
         percentage = 100;
-    }
 
-    uint32_t compare_value = (percentage * (htim16.Instance->ARR + 1) / 100);
+    uint32_t arr = htim->Instance->ARR;
 
-    __HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, compare_value);
+    uint32_t compare_value = (static_cast<uint32_t>(percentage) * (arr + 1)) / 100;
+
+    __HAL_TIM_SET_COMPARE(htim, TIM_CHANNEL_1, compare_value);
 }
