@@ -53,12 +53,12 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE LV_CONF_INCLUDE_SIMPLE)
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/Core/Inc/")
 add_subdirectory(Middlewares/Third_Party/lvgl)
 
-# Keeping this in here for now, as I might want to try and get lvgl working using LV_OS_FREERTOS
-# target_include_directories(lvgl PUBLIC
-#     ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/
-#     ${CMAKE_CURRENT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/include/
-#     ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/CMSIS/RTOS2/Include/
-# )
+target_include_directories(lvgl PRIVATE 
+    ${PROJECT_SOURCE_DIR}/Core/Inc
+    ${PROJECT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/include
+    ${PROJECT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
+)
+
 
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
