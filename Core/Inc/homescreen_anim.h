@@ -1,6 +1,8 @@
 #ifndef HOMESCREEN_ANIM_H
 #define HOMESCREEN_ANIM_H
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "lvgl.h"
 
 #define LABEL_FADE_ANIM_DURATION_MS 800
@@ -9,5 +11,7 @@
 
 void homescreen_anim_change_arc_color(lv_obj_t *arc, lv_color_t old_color, lv_color_t new_color, uint32_t delay);
 void homescreen_anim_update_label_text_fade(lv_obj_t * obj, const char * text, uint32_t delay);
-
+#ifdef __cplusplus
+}
+#endif
 #endif /* HOMESCREEN_ANIM_H */

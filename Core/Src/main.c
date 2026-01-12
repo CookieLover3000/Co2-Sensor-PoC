@@ -23,8 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "display.h"
-#include "scd40.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -74,7 +73,7 @@ static void MX_RF_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
-
+void app_main(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -88,7 +87,6 @@ void StartDefaultTask(void *argument);
  */
 int main(void)
 {
-
     /* USER CODE BEGIN 1 */
 
     /* USER CODE END 1 */
@@ -149,8 +147,7 @@ int main(void)
 
     /* USER CODE BEGIN RTOS_THREADS */
     /* add threads, ... */
-    display_initLvgl();
-    scd40_initSensor();
+    app_main();
     /* USER CODE END RTOS_THREADS */
 
     /* USER CODE BEGIN RTOS_EVENTS */

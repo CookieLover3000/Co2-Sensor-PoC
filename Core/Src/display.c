@@ -1,7 +1,6 @@
 #include "display.h"
 #include "./src/drivers/display/st7796/lv_st7796.h"
 #include "cmsis_os.h"
-#include "homescreen.h"
 #include "main.h"
 #include "stm32wbxx_hal_tim.h"
 
@@ -23,29 +22,21 @@
 extern SPI_HandleTypeDef hspi1;
 extern TIM_HandleTypeDef htim16;
 lv_display_t *lcd_disp;
-static volatile int lcd_bus_busy = 0;
+volatile int lcd_bus_busy = 0;
 
 // lvgl draw buffers. Aligned to 32-byte boundary as this is apparently best practice for DMA.
-static uint8_t buf1[DRAW_BUF_SIZE] __attribute__((aligned(32)));
-static uint8_t buf2[DRAW_BUF_SIZE] __attribute__((aligned(32)));
+uint8_t buf1[DRAW_BUF_SIZE] __attribute__((aligned(32)));
+uint8_t buf2[DRAW_BUF_SIZE] __attribute__((aligned(32)));
 /* End Private variables */
 
 /* Function Prototypes */
-void LVGL_Task(void *argument);
-static void lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size,
+void lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size,
                          const uint8_t *param, size_t param_size);
-static void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, uint8_t *param,
+void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, uint8_t *param,
                            size_t param_size);
 /* End Function Prototypes */
 
-/* Thread Handles */
-osThreadId_t LvglTaskHandle;
-
-const osThreadAttr_t LvglTaskHandle_attributes = {
-    .name = "LvglTask", .priority = (osPriority_t)osPriorityAboveNormal6, .stack_size = 8192};
-/* End Task Handles */
-
-static void init_backlight()
+void init_backlight()
 {
     display_setbacklight_brightness(100);
     HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
@@ -55,13 +46,19 @@ void display_initLvgl(void)
 {
     init_backlight();
 
-    LvglTaskHandle = osThreadNew(LVGL_Task, NULL, &LvglTaskHandle_attributes);
+    lv_init();
+    lv_tick_set_cb(osKernelGetTickCount);
 
-    if (LvglTaskHandle == NULL) {
-        /* ERROR: The task was NOT created.
-           Execution will never reach the StartLvglTask function. */
-        Error_Handler();
-    }
+    /* Initialize LCD I/O */
+    if (lcd_io_init() != 0)
+        return;
+
+    /* Create the LVGL display object and the LCD display driver */
+    lcd_disp = lv_st7796_create(LCD_H_RES, LCD_V_RES, LV_LCD_FLAG_BGR, lcd_send_cmd, lcd_send_color);
+    lv_display_set_rotation(lcd_disp, LV_DISPLAY_ROTATION_90);
+
+    lv_display_set_buffers(lcd_disp, buf1, buf2, sizeof(buf1), LV_DISPLAY_RENDER_MODE_PARTIAL);
+    lv_display_set_color_format(lcd_disp, LV_COLOR_FORMAT_RGB565_SWAPPED);
 }
 
 void lcd_color_transfer_ready_cb(SPI_HandleTypeDef *hspi)
@@ -73,7 +70,7 @@ void lcd_color_transfer_ready_cb(SPI_HandleTypeDef *hspi)
 }
 
 /* Initialize LCD I/O bus, reset LCD */
-static int32_t lcd_io_init(void)
+int32_t lcd_io_init(void)
 {
     /* Register SPI Tx Complete Callback */
     HAL_SPI_RegisterCallback(&hspi1, HAL_SPI_TX_COMPLETE_CB_ID, lcd_color_transfer_ready_cb);
@@ -92,7 +89,7 @@ static int32_t lcd_io_init(void)
 
 /* Platform-specific implementation of the LCD send command function. In general this should use
  * polling transfer. */
-static void lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size,
+void lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size,
                          const uint8_t *param, size_t param_size)
 {
     LV_UNUSED(disp);
@@ -118,7 +115,7 @@ static void lcd_send_cmd(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size
  * should use DMA transfer. In case of a DMA transfer a callback must be installed to notify LVGL
  * about the end of the transfer.
  */
-static void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, uint8_t *param,
+void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, uint8_t *param,
                            size_t param_size)
 {
     LV_UNUSED(disp);
@@ -154,34 +151,4 @@ void display_setbacklight_brightness(uint8_t percentage)
     uint32_t compare_value = (percentage * (htim16.Instance->ARR + 1) / 100);
 
     __HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, compare_value);
-}
-
-void LVGL_Task(void *argument)
-{
-    /* Initialize LVGL */
-    lv_init();
-    lv_tick_set_cb(osKernelGetTickCount);
-
-    /* Initialize LCD I/O */
-    if (lcd_io_init() != 0)
-        return;
-
-    /* Create the LVGL display object and the LCD display driver */
-    lcd_disp =
-        lv_st7796_create(LCD_H_RES, LCD_V_RES, LV_LCD_FLAG_BGR, lcd_send_cmd, lcd_send_color);
-    lv_display_set_rotation(lcd_disp, LV_DISPLAY_ROTATION_90);
-
-    lv_display_set_buffers(lcd_disp, buf1, buf2, sizeof(buf1), LV_DISPLAY_RENDER_MODE_PARTIAL);
-    lv_display_set_color_format(lcd_disp, LV_COLOR_FORMAT_RGB565_SWAPPED);
-    homescreen_init();
-
-    for (;;) {
-        homescreen_update_sensor_values();
-        /* The task running lv_timer_handler should have lower priority than that running
-         * `lv_tick_inc` */
-        lv_timer_handler();
-        /* raise the task priority of LVGL and/or reduce the handler period can improve the
-         * performance */
-        osDelay(10);
-    }
 }
