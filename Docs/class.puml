@@ -1,0 +1,80 @@
+@startuml Co2 Monitor Class Diagram
+class "main.c" as MainC {
+
+}
+
+class app_main {
+
+}
+namespace App {
+    class DisplayHandler {
+
+    }
+    class TouchHandler {
+
+    }
+    class SensorHandler {
+
+    }
+    Interface DisplayScreenBase <<interface>>{
+
+    }
+    interface DisplayDriverBase <<interface>>{
+
+    }
+    interface TouchDriverBase <<interface>>{
+
+    }
+    interface SensorDriverBase <<interface>>{
+
+    }
+}
+
+namespace Display {
+    class Bootscreen {
+
+    }
+    class Homescreen {
+
+    }
+    class SettingsScreen {
+
+    }
+}
+
+namespace Drivers {
+    namespace SPI {
+        class ST7796 {
+
+        }
+    }
+    namespace I2C {
+        class FT6336U {
+
+        }
+
+        class SCD40 {
+
+        }
+    }
+}
+
+
+' This syntax means Circle implements Shape
+MainC --> app_main
+app_main --> DisplayHandler
+app_main --> TouchHandler
+app_main --> SensorHandler
+
+DisplayHandler --> DisplayDriverBase
+DisplayHandler --> DisplayScreenBase
+DisplayScreenBase <|-- Homescreen
+DisplayScreenBase <|-- SettingsScreen
+DisplayScreenBase <|-- Bootscreen
+TouchHandler --> TouchDriverBase
+SensorHandler --> SensorDriverBase
+
+DisplayDriverBase <|-- ST7796
+TouchDriverBase <|-- FT6336U
+SensorDriverBase <|-- SCD40
+@enduml
