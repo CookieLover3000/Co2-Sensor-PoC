@@ -160,6 +160,7 @@ void LVGL_Task(void *argument)
 {
     /* Initialize LVGL */
     lv_init();
+    lv_tick_set_cb(osKernelGetTickCount);
 
     /* Initialize LCD I/O */
     if (lcd_io_init() != 0)
