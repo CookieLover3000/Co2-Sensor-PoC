@@ -70,9 +70,10 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     Core/Src/homescreen.cpp
     Core/Src/homescreen_anim.c
-    Core/Src/scd40.c
     Core/Src/app_main.cpp
     Core/Src/DisplayHandler.cpp
+    Core/Src/SCD40.cpp
+    Core/Src/SensorHandler.cpp
     Core/Src/ST7796.cpp
     fonts/custom_font_montserrat_44.c
     fonts/custom_font_montserrat_34.c
