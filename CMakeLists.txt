@@ -75,6 +75,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/SCD40.cpp
     Core/Src/SensorHandler.cpp
     Core/Src/ST7796.cpp
+    Core/Src/FT6336U.cpp
     fonts/custom_font_montserrat_44.c
     fonts/custom_font_montserrat_34.c
     fonts/custom_font_montserrat_18.c
