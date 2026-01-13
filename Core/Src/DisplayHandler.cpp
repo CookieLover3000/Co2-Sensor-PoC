@@ -3,17 +3,11 @@
 #include "DisplayScreenBase.hpp"
 #include "ST7796.hpp"
 #include "cmsis_os.h"
-#include "main.h"
 #include "homescreen.hpp"
+#include "main.h"
 
 /* Thread Handles */
-osThreadId_t LvglTaskHandle;
 
-const osThreadAttr_t LvglTaskHandle_attributes = {
-    .name = "LvglTask",
-    .stack_size = 8192,
-    .priority = (osPriority_t)osPriorityAboveNormal6,
-};
 /* End Task Handles */
 
 using namespace App;

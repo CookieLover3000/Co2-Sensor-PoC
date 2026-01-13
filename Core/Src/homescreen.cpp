@@ -4,13 +4,13 @@
 #include "custom_fonts.h"
 #include "homescreen_anim.h"
 
-#include <stdio.h>
 #include <src/core/lv_obj_style.h>
 #include <src/display/lv_display.h>
 #include <src/font/lv_font.h>
 #include <src/misc/lv_color.h>
 #include <src/misc/lv_types.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 using namespace UI;

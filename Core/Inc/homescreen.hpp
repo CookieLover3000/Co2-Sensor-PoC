@@ -2,9 +2,8 @@
 #define HOMESCREEN_H
 
 #include "DisplayScreenBase.hpp"
-#include "lvgl.h"
 #include "SensorHandler.hpp"
-
+#include "lvgl.h"
 
 namespace UI
 {
@@ -12,7 +11,7 @@ namespace UI
 class Homescreen : public DisplayScreenBase
 {
   public:
-    Homescreen(App::SensorHandler &s) : sensor(s){}
+    Homescreen(App::SensorHandler &s) : sensor(s) {}
     ~Homescreen();
 
     virtual void init(void) override;

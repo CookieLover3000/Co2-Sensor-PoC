@@ -3,6 +3,7 @@
 
 #include "DisplayDriverBase.hpp"
 #include "lvgl.h"
+#include "stm32wbxx_hal.h"
 #include <stdint.h>
 
 // WARNING: Can only drive a single display because of static functions.
@@ -19,7 +20,7 @@ class ST7796 : public DisplayDriverBase
   public:
     ST7796(SPI_HandleTypeDef *hspi_ptr, TIM_HandleTypeDef *htim_ptr) : hspi(hspi_ptr), htim(htim_ptr) {}
     ~ST7796() {}
-    
+
     virtual void lvglDisplayInit(void) override;
 
   private:
