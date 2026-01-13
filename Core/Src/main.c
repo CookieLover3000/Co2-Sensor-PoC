@@ -170,7 +170,8 @@ int main(void)
     BspCOMInit.StopBits = COM_STOPBITS_1;
     BspCOMInit.Parity = COM_PARITY_NONE;
     BspCOMInit.HwFlowCtl = COM_HWCONTROL_NONE;
-    if (BSP_COM_Init(COM1, &BspCOMInit) != BSP_ERROR_NONE) {
+    if (BSP_COM_Init(COM1, &BspCOMInit) != BSP_ERROR_NONE)
+    {
         Error_Handler();
     }
 
@@ -181,7 +182,8 @@ int main(void)
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
-    while (1) {
+    while (1)
+    {
 
         /* USER CODE END WHILE */
 
@@ -206,8 +208,7 @@ void SystemClock_Config(void)
     /** Initializes the RCC Oscillators according to the specified parameters
      * in the RCC_OscInitTypeDef structure.
      */
-    RCC_OscInitStruct.OscillatorType =
-        RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_HSE | RCC_OSCILLATORTYPE_MSI;
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_HSE | RCC_OSCILLATORTYPE_MSI;
     RCC_OscInitStruct.HSEState = RCC_HSE_ON;
     RCC_OscInitStruct.HSIState = RCC_HSI_ON;
     RCC_OscInitStruct.MSIState = RCC_MSI_ON;
@@ -215,7 +216,8 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.MSICalibrationValue = RCC_MSICALIBRATION_DEFAULT;
     RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_10;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+    {
         Error_Handler();
     }
 
@@ -230,7 +232,8 @@ void SystemClock_Config(void)
     RCC_ClkInitStruct.AHBCLK2Divider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.AHBCLK4Divider = RCC_SYSCLK_DIV1;
 
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK) {
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
+    {
         Error_Handler();
     }
 }
@@ -250,7 +253,8 @@ void PeriphCommonClock_Config(void)
     PeriphClkInitStruct.SmpsClockSelection = RCC_SMPSCLKSOURCE_HSI;
     PeriphClkInitStruct.SmpsDivSelection = RCC_SMPSCLKDIV_RANGE0;
 
-    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
         Error_Handler();
     }
     /* USER CODE BEGIN Smps */
@@ -282,19 +286,22 @@ static void MX_I2C1_Init(void)
     hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
     hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
     hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-    if (HAL_I2C_Init(&hi2c1) != HAL_OK) {
+    if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+    {
         Error_Handler();
     }
 
     /** Configure Analogue filter
      */
-    if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK) {
+    if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+    {
         Error_Handler();
     }
 
     /** Configure Digital filter
      */
-    if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK) {
+    if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
+    {
         Error_Handler();
     }
     /* USER CODE BEGIN I2C1_Init 2 */
@@ -352,7 +359,8 @@ static void MX_SPI1_Init(void)
     hspi1.Init.CRCPolynomial = 7;
     hspi1.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
     hspi1.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
-    if (HAL_SPI_Init(&hspi1) != HAL_OK) {
+    if (HAL_SPI_Init(&hspi1) != HAL_OK)
+    {
         Error_Handler();
     }
     /* USER CODE BEGIN SPI1_Init 2 */
@@ -385,17 +393,20 @@ static void MX_TIM1_Init(void)
     htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     htim1.Init.RepetitionCounter = 0;
     htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-    if (HAL_TIM_Base_Init(&htim1) != HAL_OK) {
+    if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+    {
         Error_Handler();
     }
     sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-    if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK) {
+    if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+    {
         Error_Handler();
     }
     sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
     sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
     sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-    if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK) {
+    if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+    {
         Error_Handler();
     }
     /* USER CODE BEGIN TIM1_Init 2 */
@@ -428,10 +439,12 @@ static void MX_TIM16_Init(void)
     htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     htim16.Init.RepetitionCounter = 0;
     htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-    if (HAL_TIM_Base_Init(&htim16) != HAL_OK) {
+    if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
+    {
         Error_Handler();
     }
-    if (HAL_TIM_PWM_Init(&htim16) != HAL_OK) {
+    if (HAL_TIM_PWM_Init(&htim16) != HAL_OK)
+    {
         Error_Handler();
     }
     sConfigOC.OCMode = TIM_OCMODE_PWM1;
@@ -441,7 +454,8 @@ static void MX_TIM16_Init(void)
     sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
     sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
     sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-    if (HAL_TIM_PWM_ConfigChannel(&htim16, &sConfigOC, TIM_CHANNEL_1) != HAL_OK) {
+    if (HAL_TIM_PWM_ConfigChannel(&htim16, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+    {
         Error_Handler();
     }
     sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
@@ -452,7 +466,8 @@ static void MX_TIM16_Init(void)
     sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
     sBreakDeadTimeConfig.BreakFilter = 0;
     sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
-    if (HAL_TIMEx_ConfigBreakDeadTime(&htim16, &sBreakDeadTimeConfig) != HAL_OK) {
+    if (HAL_TIMEx_ConfigBreakDeadTime(&htim16, &sBreakDeadTimeConfig) != HAL_OK)
+    {
         Error_Handler();
     }
     /* USER CODE BEGIN TIM16_Init 2 */
@@ -542,7 +557,8 @@ void StartDefaultTask(void *argument)
 {
     /* USER CODE BEGIN 5 */
     /* Infinite loop */
-    for (;;) {
+    for (;;)
+    {
         osDelay(1);
     }
     /* USER CODE END 5 */
@@ -561,7 +577,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     /* USER CODE BEGIN Callback 0 */
 
     /* USER CODE END Callback 0 */
-    if (htim->Instance == TIM2) {
+    if (htim->Instance == TIM2)
+    {
         HAL_IncTick();
     }
     /* USER CODE BEGIN Callback 1 */
@@ -578,7 +595,8 @@ void Error_Handler(void)
     /* USER CODE BEGIN Error_Handler_Debug */
     /* User can add his own implementation to report the HAL error return state */
     __disable_irq();
-    while (1) {
+    while (1)
+    {
     }
     /* USER CODE END Error_Handler_Debug */
 }

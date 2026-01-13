@@ -23,7 +23,8 @@
 #define __STM32WBxx_HAL_CONF_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /* Exported types ------------------------------------------------------------*/
@@ -124,16 +125,16 @@ extern "C" {
  */
 #if !defined(LSI1_VALUE)
 #define LSI1_VALUE ((uint32_t)32000) /*!< LSI1 Typical Value in Hz*/
-#endif /* LSI1_VALUE */              /*!< Value of the Internal Low Speed oscillator in Hz         \
-                                     The real value may vary depending on the variations           \
+#endif /* LSI1_VALUE */              /*!< Value of the Internal Low Speed oscillator in Hz                             \
+                                     The real value may vary depending on the variations                               \
                                      in voltage and temperature.*/
 /**
  * @brief Internal Low Speed oscillator (LSI2) value.
  */
 #if !defined(LSI2_VALUE)
 #define LSI2_VALUE ((uint32_t)32000) /*!< LSI2 Typical Value in Hz*/
-#endif /* LSI2_VALUE */              /*!< Value of the Internal Low Speed oscillator in Hz         \
-                                     The real value may vary depending on the variations           \
+#endif /* LSI2_VALUE */              /*!< Value of the Internal Low Speed oscillator in Hz                             \
+                                     The real value may vary depending on the variations                               \
                                      in voltage and temperature.*/
 
 /**
@@ -162,9 +163,8 @@ extern "C" {
  *        frequency.
  */
 #if !defined(EXTERNAL_SAI1_CLOCK_VALUE)
-#define EXTERNAL_SAI1_CLOCK_VALUE                                                                  \
-    ((uint32_t)2097000) /*!< Value of the SAI1 External clock source in Hz*/
-#endif                  /* EXTERNAL_SAI1_CLOCK_VALUE */
+#define EXTERNAL_SAI1_CLOCK_VALUE ((uint32_t)2097000) /*!< Value of the SAI1 External clock source in Hz*/
+#endif                                                /* EXTERNAL_SAI1_CLOCK_VALUE */
 
 /* Tip: To avoid modifying this file each time you need to use different HSE,
    ===  you can define the HSE value in your toolchain compiler preprocessor. */

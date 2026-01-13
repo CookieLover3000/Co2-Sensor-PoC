@@ -34,8 +34,7 @@ static void fade_in_after_update_cb(lv_anim_t *a)
     lv_anim_start(&anim);
 }
 
-void homescreen_anim_change_arc_color(lv_obj_t *arc, lv_color_t old_color, lv_color_t new_color,
-                                      uint32_t delay)
+void homescreen_anim_change_arc_color(lv_obj_t *arc, lv_color_t old_color, lv_color_t new_color, uint32_t delay)
 {
     oldColorCode = old_color;
     newColorCode = new_color;

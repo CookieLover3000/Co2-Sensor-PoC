@@ -135,22 +135,22 @@
      will be done in Flash. */
 /* #define VECT_TAB_SRAM */
 #if defined(VECT_TAB_SRAM)
-#define VECT_TAB_BASE_ADDRESS                                                                      \
-    SRAM1_BASE /*!< Vector Table base address field.                                               \
+#define VECT_TAB_BASE_ADDRESS                                                                                          \
+    SRAM1_BASE /*!< Vector Table base address field.                                                                   \
                     This value must be a multiple of 0x200. */
 #if !defined(VECT_TAB_OFFSET)
-#define VECT_TAB_OFFSET                                                                            \
-    0x00000000U /*!< Vector Table offset field.                                                    \
+#define VECT_TAB_OFFSET                                                                                                \
+    0x00000000U /*!< Vector Table offset field.                                                                        \
                      This value must be a multiple of 0x200. */
 #endif          /* VECT_TAB_OFFSET */
 
 #else
-#define VECT_TAB_BASE_ADDRESS                                                                      \
-    FLASH_BASE /*!< Vector Table base address field.                                               \
+#define VECT_TAB_BASE_ADDRESS                                                                                          \
+    FLASH_BASE /*!< Vector Table base address field.                                                                   \
                     This value must be a multiple of 0x200. */
 #if !defined(VECT_TAB_OFFSET)
-#define VECT_TAB_OFFSET                                                                            \
-    0x00000000U /*!< Vector Table offset field.                                                    \
+#define VECT_TAB_OFFSET                                                                                                \
+    0x00000000U /*!< Vector Table offset field.                                                                        \
                      This value must be a multiple of 0x200. */
 #endif          /* VECT_TAB_OFFSET */
 
@@ -187,13 +187,11 @@ const uint32_t AHBPrescTable[16UL] = {1UL, 3UL, 5UL, 1UL,  1UL,  6UL,   10UL,  3
 
 const uint32_t APBPrescTable[8UL] = {0UL, 0UL, 0UL, 0UL, 1UL, 2UL, 3UL, 4UL};
 
-const uint32_t MSIRangeTable[16UL] = {100000UL,   200000UL,   400000UL,  800000UL,   1000000UL,
-                                      2000000UL,  4000000UL,  8000000UL, 16000000UL, 24000000UL,
-                                      32000000UL, 48000000UL, 0UL,       0UL,        0UL,
-                                      0UL}; /* 0UL values are incorrect cases */
+const uint32_t MSIRangeTable[16UL] = {100000UL,  200000UL,  400000UL,   800000UL,   1000000UL,  2000000UL,
+                                      4000000UL, 8000000UL, 16000000UL, 24000000UL, 32000000UL, 48000000UL,
+                                      0UL,       0UL,       0UL,        0UL}; /* 0UL values are incorrect cases */
 
-#if defined(STM32WB55xx) || defined(STM32WB5Mxx) || defined(STM32WB35xx) ||                        \
-    defined(STM32WB15xx) || defined(STM32WB1Mxx)
+#if defined(STM32WB55xx) || defined(STM32WB5Mxx) || defined(STM32WB35xx) || defined(STM32WB15xx) || defined(STM32WB1Mxx)
 const uint32_t SmpsPrescalerTable[4UL][6UL] = {{1UL, 3UL, 2UL, 2UL, 1UL, 2UL},
                                                {2UL, 6UL, 4UL, 3UL, 2UL, 4UL},
                                                {4UL, 12UL, 8UL, 6UL, 4UL, 8UL},
@@ -230,9 +228,8 @@ void SystemInit(void)
 
     /* FPU settings ------------------------------------------------------------*/
 #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
-    SCB->CPACR |=
-        ((3UL << (10UL * 2UL)) | (3UL << (11UL * 2UL))); /* set CP10 and CP11 Full Access */
-#endif                                                   /* FPU */
+    SCB->CPACR |= ((3UL << (10UL * 2UL)) | (3UL << (11UL * 2UL))); /* set CP10 and CP11 Full Access */
+#endif                                                             /* FPU */
 
     /* Reset the RCC clock configuration to the default reset state ------------*/
     /* Set MSION bit */
@@ -317,7 +314,8 @@ void SystemCoreClockUpdate(void)
     msirange = MSIRangeTable[(RCC->CR & RCC_CR_MSIRANGE) >> RCC_CR_MSIRANGE_Pos];
 
     /* Get SYSCLK source -------------------------------------------------------*/
-    switch (RCC->CFGR & RCC_CFGR_SWS) {
+    switch (RCC->CFGR & RCC_CFGR_SWS)
+    {
     case 0x00: /* MSI used as system clock source */
         SystemCoreClock = msirange;
         break;
@@ -341,10 +339,12 @@ void SystemCoreClockUpdate(void)
         if (pllsource == 0x02UL) /* HSI used as PLL clock source */
         {
             pllvco = (HSI_VALUE / pllm);
-        } else if (pllsource == 0x03UL) /* HSE used as PLL clock source */
+        }
+        else if (pllsource == 0x03UL) /* HSE used as PLL clock source */
         {
             pllvco = (HSE_VALUE / pllm);
-        } else /* MSI used as PLL clock source */
+        }
+        else /* MSI used as PLL clock source */
         {
             pllvco = (msirange / pllm);
         }

@@ -24,7 +24,8 @@
 #define STM32WBXX_NUCLEO_CONF_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes ------------------------------------------------------------------*/

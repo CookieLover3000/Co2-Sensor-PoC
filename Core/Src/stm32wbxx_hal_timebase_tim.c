@@ -79,18 +79,23 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
     htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
 
     status = HAL_TIM_Base_Init(&htim2);
-    if (status == HAL_OK) {
+    if (status == HAL_OK)
+    {
         /* Start the TIM time Base generation in interrupt mode */
         status = HAL_TIM_Base_Start_IT(&htim2);
-        if (status == HAL_OK) {
+        if (status == HAL_OK)
+        {
             /* Enable the TIM2 global Interrupt */
             HAL_NVIC_EnableIRQ(TIM2_IRQn);
             /* Configure the SysTick IRQ priority */
-            if (TickPriority < (1UL << __NVIC_PRIO_BITS)) {
+            if (TickPriority < (1UL << __NVIC_PRIO_BITS))
+            {
                 /* Configure the TIM IRQ priority */
                 HAL_NVIC_SetPriority(TIM2_IRQn, TickPriority, 0U);
                 uwTickPrio = TickPriority;
-            } else {
+            }
+            else
+            {
                 status = HAL_ERROR;
             }
         }

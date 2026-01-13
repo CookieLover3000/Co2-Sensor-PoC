@@ -89,7 +89,8 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-    if (hi2c->Instance == I2C1) {
+    if (hi2c->Instance == I2C1)
+    {
         /* USER CODE BEGIN I2C1_MspInit 0 */
 
         /* USER CODE END I2C1_MspInit 0 */
@@ -98,7 +99,8 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
          */
         PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_I2C1;
         PeriphClkInitStruct.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
-        if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
+        if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+        {
             Error_Handler();
         }
 
@@ -135,7 +137,8 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
  */
 void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
 {
-    if (hi2c->Instance == I2C1) {
+    if (hi2c->Instance == I2C1)
+    {
         /* USER CODE BEGIN I2C1_MspDeInit 0 */
 
         /* USER CODE END I2C1_MspDeInit 0 */
@@ -168,7 +171,8 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c)
 void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-    if (hspi->Instance == SPI1) {
+    if (hspi->Instance == SPI1)
+    {
         /* USER CODE BEGIN SPI1_MspInit 0 */
 
         /* USER CODE END SPI1_MspInit 0 */
@@ -205,7 +209,8 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
         hdma_spi1_tx.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
         hdma_spi1_tx.Init.Mode = DMA_NORMAL;
         hdma_spi1_tx.Init.Priority = DMA_PRIORITY_MEDIUM;
-        if (HAL_DMA_Init(&hdma_spi1_tx) != HAL_OK) {
+        if (HAL_DMA_Init(&hdma_spi1_tx) != HAL_OK)
+        {
             Error_Handler();
         }
 
@@ -228,7 +233,8 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
  */
 void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
 {
-    if (hspi->Instance == SPI1) {
+    if (hspi->Instance == SPI1)
+    {
         /* USER CODE BEGIN SPI1_MspDeInit 0 */
 
         /* USER CODE END SPI1_MspDeInit 0 */
@@ -260,7 +266,8 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
  */
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim_base)
 {
-    if (htim_base->Instance == TIM1) {
+    if (htim_base->Instance == TIM1)
+    {
         /* USER CODE BEGIN TIM1_MspInit 0 */
 
         /* USER CODE END TIM1_MspInit 0 */
@@ -269,7 +276,9 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim_base)
         /* USER CODE BEGIN TIM1_MspInit 1 */
 
         /* USER CODE END TIM1_MspInit 1 */
-    } else if (htim_base->Instance == TIM16) {
+    }
+    else if (htim_base->Instance == TIM16)
+    {
         /* USER CODE BEGIN TIM16_MspInit 0 */
 
         /* USER CODE END TIM16_MspInit 0 */
@@ -284,7 +293,8 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim_base)
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-    if (htim->Instance == TIM16) {
+    if (htim->Instance == TIM16)
+    {
         /* USER CODE BEGIN TIM16_MspPostInit 0 */
 
         /* USER CODE END TIM16_MspPostInit 0 */
@@ -313,7 +323,8 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim)
  */
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim_base)
 {
-    if (htim_base->Instance == TIM1) {
+    if (htim_base->Instance == TIM1)
+    {
         /* USER CODE BEGIN TIM1_MspDeInit 0 */
 
         /* USER CODE END TIM1_MspDeInit 0 */
@@ -322,7 +333,9 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim_base)
         /* USER CODE BEGIN TIM1_MspDeInit 1 */
 
         /* USER CODE END TIM1_MspDeInit 1 */
-    } else if (htim_base->Instance == TIM16) {
+    }
+    else if (htim_base->Instance == TIM16)
+    {
         /* USER CODE BEGIN TIM16_MspDeInit 0 */
 
         /* USER CODE END TIM16_MspDeInit 0 */
