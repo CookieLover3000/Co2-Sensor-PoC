@@ -42,7 +42,7 @@ namespace UI {
 namespace Drivers {
 
     interface DisplayDriverBase <<interface>>{
-
+        + {abstract} void lvglDisplayInit()
     }
 
     interface TouchDriverBase <<interface>>{
@@ -50,7 +50,9 @@ namespace Drivers {
     }
 
     interface SensorDriverBase <<interface>>{
-
+        + {abstract} void init()
+        + {abstract} void read()
+        + {abstract} const osMessageQueueId_t getQueueHandle()
     }
 
     namespace SPI {
