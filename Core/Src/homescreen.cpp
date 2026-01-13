@@ -1,9 +1,10 @@
 #include "homescreen.hpp"
+#include "SensorHandler.hpp"
 #include "cmsis_os2.h"
 #include "custom_fonts.h"
 #include "homescreen_anim.h"
-#include "scd40.h"
 
+#include <stdio.h>
 #include <src/core/lv_obj_style.h>
 #include <src/display/lv_display.h>
 #include <src/font/lv_font.h>
@@ -14,13 +15,11 @@
 
 using namespace UI;
 
-#define WIDGET_AMOUNT       3
-#define CO2_DANGEROUS_VALUE 1000
-#define CO2_WARNING_VALUE   750
+#define WIDGET_AMOUNT                 3
+#define CO2_DANGEROUS_VALUE           1000
+#define CO2_WARNING_VALUE             750
+#define CO2_SENSOR_QUEUE_HANDLE_INDEX 0
 
-extern osMessageQueueId_t scd40QueueHandle;
-
-Homescreen::Homescreen() {}
 Homescreen::~Homescreen()
 {
     destroy();
@@ -171,17 +170,21 @@ void Homescreen::update_widget_label(Widget_t *widget, const char *co2, const ch
     }
 }
 
+extern osMessageQueueId_t handle;
+
 void Homescreen::update()
 {
-    scd40Data_t received_data = {0};
+    Drivers::SCD40Data received_data = {0};
     char co2_string[6];
     char temperature_string[12];
     char humidity_string[10];
 
-    if (scd40QueueHandle == NULL)
+    osMessageQueueId_t queueHandle = sensor.getQueueHandle(CO2_SENSOR_QUEUE_HANDLE_INDEX);
+
+    if (queueHandle == NULL)
         return;
 
-    if (osMessageQueueGet(scd40QueueHandle, &received_data, NULL, 0) == osOK)
+    if (osMessageQueueGet(queueHandle, &received_data, NULL, 0) == osOK)
     {
 
         uint16_t temp_int = (uint16_t)received_data.temperature;

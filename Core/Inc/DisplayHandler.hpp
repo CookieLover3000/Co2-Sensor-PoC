@@ -1,13 +1,14 @@
 #include "DisplayScreenBase.hpp"
 #include "DisplayDriverBase.hpp"
-#include <homescreen.hpp>
+#include "SensorHandler.hpp"
+#include "homescreen.hpp"
 
 namespace App
 {
 class DisplayHandler
 {
   public:
-    DisplayHandler(Drivers::DisplayDriverBase *drv) : driver(drv){}
+    DisplayHandler(Drivers::DisplayDriverBase *drv, SensorHandler &sensor) : homescreen(sensor), driver(drv){}
     void init();
     void setScreen(UI::DisplayScreenBase &newScreen);
     void showHomescreen();

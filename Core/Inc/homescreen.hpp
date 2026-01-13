@@ -3,22 +3,24 @@
 
 #include "DisplayScreenBase.hpp"
 #include "lvgl.h"
-#include <stdio.h>
+#include "SensorHandler.hpp"
+
 
 namespace UI
 {
 
-class Homescreen : DisplayScreenBase
+class Homescreen : public DisplayScreenBase
 {
   public:
-    Homescreen();
+    Homescreen(App::SensorHandler &s) : sensor(s){}
     ~Homescreen();
-    
+
     virtual void init(void) override;
     virtual void update(void) override;
     virtual void destroy(void) override;
 
   private:
+    App::SensorHandler &sensor;
     typedef enum
     {
         CO2,
