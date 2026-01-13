@@ -1,7 +1,7 @@
 #include "SCD40.hpp"
+#include "SensorDriverBase.hpp"
 #include "main.h"
 #include "stm32wbxx_hal_i2c.h"
-#include "SensorDriverBase.hpp"
 
 using namespace Drivers;
 using namespace Drivers::I2C;

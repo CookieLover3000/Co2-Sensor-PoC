@@ -16,7 +16,7 @@ namespace I2C
 class SCD40 : public SensorDriverBase
 {
   public:
-    SCD40(I2C_HandleTypeDef *handler) : hi2c(handler){}
+    SCD40(I2C_HandleTypeDef *handler) : hi2c(handler) {}
     ~SCD40() {}
     virtual void init() override;
     virtual SensorMessage read() override;
