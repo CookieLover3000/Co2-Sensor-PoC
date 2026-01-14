@@ -147,7 +147,7 @@ void Homescreen::update_widget_label(Widget_t *widget, const char *co2, const ch
                                              0);
             widget->active_color = homescreen_status_colors.co2_dangerous;
         }
-        else if (co2_value >= CO2_WARNING_VALUE &&
+        else if (co2_value >= CO2_WARNING_VALUE && co2_value < CO2_DANGEROUS_VALUE &&
                  !lv_color_eq(widget->active_color, homescreen_status_colors.co2_warning))
         {
             homescreen_anim_change_arc_color(widget->arc, widget->active_color, homescreen_status_colors.co2_warning,
