@@ -15,7 +15,7 @@ ST7796 *ST7796::instance = nullptr;
 
 void ST7796::init_backlight()
 {
-    display_setbacklight_brightness(100);
+    setBrightness(100);
     HAL_TIM_PWM_Start(htim, TIM_CHANNEL_1);
 }
 
@@ -122,7 +122,7 @@ void ST7796::lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_s
     }
 }
 
-void ST7796::display_setbacklight_brightness(uint8_t percentage)
+void ST7796::setBrightness(uint8_t percentage)
 {
     // Clamp the value to 100%
     if (percentage > 100)

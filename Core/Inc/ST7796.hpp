@@ -4,7 +4,7 @@
 #include "DisplayDriverBase.hpp"
 #include "lvgl.h"
 #include "stm32wbxx_hal.h"
-#include <stdint.h>
+#include <cstdint>
 
 // WARNING: Can only drive a single display because of static functions.
 
@@ -22,6 +22,7 @@ class ST7796 : public DisplayDriverBase
     ~ST7796() {}
 
     virtual void lvglDisplayInit(void) override;
+    virtual void setBrightness(uint8_t percentage) override;
 
   private:
     SPI_HandleTypeDef *hspi;
@@ -46,7 +47,6 @@ class ST7796 : public DisplayDriverBase
                              size_t param_size);
     static void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, uint8_t *param,
                                size_t param_size);
-    void display_setbacklight_brightness(uint8_t percentage);
 };
 
 } // namespace SPI

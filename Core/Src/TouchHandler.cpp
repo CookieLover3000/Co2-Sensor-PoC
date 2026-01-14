@@ -29,3 +29,13 @@ void TouchHandler::lvglTouchPad_cb(lv_indev_t *indev, lv_indev_data_t *data)
         data->state = LV_INDEV_STATE_REL;
     }
 }
+
+bool TouchHandler::isTouched()
+{
+    Drivers::TouchData data;
+    touchDriver->GetTouchData(&data);
+
+    if (data.status == 1)
+        return true;
+    return false;
+}

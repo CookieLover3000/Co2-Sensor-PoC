@@ -17,6 +17,8 @@ class TouchHandler
     // data instead.
     // It might also be necessary to invert the touch coördinates if the display is inverted (I don't remember)
     static void lvglTouchPad_cb(lv_indev_t *indev, lv_indev_data_t *data);
+    // polling based, seems to work fine for now. Might also need to buffer it.
+    bool isTouched();
 
   private:
     Drivers::TouchDriverBase *touchDriver;

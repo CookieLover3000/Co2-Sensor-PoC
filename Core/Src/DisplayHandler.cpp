@@ -35,6 +35,42 @@ void DisplayHandler::setScreen(UI::DisplayScreenBase &newScreen)
     currentScreen->init();
 }
 
+void DisplayHandler::updateBrightnessLogic()
+{
+    if (touchHandler->isTouched())
+    {
+        display->setBrightness(settings.max_brightness);
+        timer.start(settings.display_off_delay);
+        isFading = false;
+    }
+
+    if (!isFading && timer.isExpired())
+    {
+        isFading = true;
+        fadeStartTime = osKernelGetTickCount();
+        startBrightness = settings.max_brightness;
+    }
+
+    if (!isFading)
+        return;
+
+    uint32_t elapsed = osKernelGetTickCount() - fadeStartTime;
+
+    if (elapsed >= fadeDuration)
+    {
+        display->setBrightness(settings.min_brightness);
+        isFading = false;
+    }
+    else
+    {
+        // Start + (End - Start) * (Elapsed / Total)
+        float progress = (float)elapsed / (float)fadeDuration;
+        int currentBrightness = startBrightness + (int)((0 - startBrightness) * progress);
+
+        display->setBrightness(currentBrightness);
+    }
+}
+
 void DisplayHandler::taskWrapper(void *argument)
 {
     DisplayHandler *handler = static_cast<DisplayHandler *>(argument);
@@ -42,10 +78,13 @@ void DisplayHandler::taskWrapper(void *argument)
 }
 void DisplayHandler::LVGLTask()
 {
-    if (driver)
+    timer.start(settings.display_off_delay);
+    if (!display)
     {
-        driver->lvglDisplayInit();
+        // TODO: Error handling
     }
+    display->lvglDisplayInit();
+    display->setBrightness(settings.max_brightness);
 
     // Initialize the touch interface.
     lv_indev_t *indev = lv_indev_create();
@@ -55,8 +94,10 @@ void DisplayHandler::LVGLTask()
 
     homescreen.init();
 
-    for (;;)
+    while (1)
     {
+        updateBrightnessLogic();
+
         homescreen.update();
         lv_timer_handler();
 

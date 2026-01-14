@@ -6,6 +6,11 @@ class "main.c" as MainC {
 class app_main {
 
 }
+
+class NonBlockingTimer {
+
+}
+
 namespace App {
     class DisplayHandler {
         - DisplayScreenBase* currentScreen
@@ -85,6 +90,7 @@ app_main --> TouchHandler
 app_main --> SensorHandler
 
 DisplayHandler --> TouchHandler
+DisplayHandler --> NonBlockingTimer
 DisplayHandler --> DisplayDriverBase
 DisplayHandler o-- DisplayScreenBase
 DisplayScreenBase <|-- Homescreen
