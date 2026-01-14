@@ -13,7 +13,8 @@ namespace App {
         + void update()
     }
     class TouchHandler {
-
+        + void init()
+        + static void lvglTouchPad_cb(lv_indev_t*, lv_indev_data_t*)
     }
     class SensorHandler {
 
@@ -83,6 +84,7 @@ app_main --> DisplayHandler
 app_main --> TouchHandler
 app_main --> SensorHandler
 
+DisplayHandler --> TouchHandler
 DisplayHandler --> DisplayDriverBase
 DisplayHandler o-- DisplayScreenBase
 DisplayScreenBase <|-- Homescreen

@@ -3,7 +3,7 @@
 #include "main.h"
 #include "stm32wbxx_hal.h"
 #include "stm32wbxx_hal_def.h"
-#include "stm32wbxx_nucleo.h"
+#include "stm32wbxx_nucleo.h" // Should be removed when switching to custom board.
 #include <stdint.h>
 
 #define FT6336U_ADDR  (0x38 << 1) // Standard I2C address
@@ -23,6 +23,10 @@ FT6336U *FT6336U::instance = nullptr;
 void FT6336U::init()
 {
     I2CDevice::initI2C();
+
+    const osMutexAttr_t attr = {"TouchDataLock", osMutexRecursive | osMutexPrioInherit, NULL, 0};
+    dataMutex = osMutexNew(&attr);
+
     touchTaskHandle = osThreadNew(FT6336U::taskWrapper, this, &touchTask_attributes);
 }
 
@@ -36,16 +40,23 @@ bool FT6336U::read()
     }
 
     uint8_t touch_count = data[0] & 0x0F;
+
     if (touch_count > 0)
     {
+        if (osMutexAcquire(dataMutex, 0) != osOK)
+            return false;
         // Parse X and Y (Masking out event bits in high bytes, these contain event data that is unnecessary here
         // and will fuck up the calculation)
         point.x = ((data[1] & 0x0F) << 8) | data[2];
         point.y = ((data[3] & 0x0F) << 8) | data[4];
         point.status = 1;
-        return true;
     }
-    return false;
+    else
+    {
+        point.status = 0;
+    }
+    osMutexRelease(dataMutex);
+    return true;
 }
 
 // using this callback here is far from optimal, but it doesn't matter for this project so I will leave it like this.
@@ -83,10 +94,27 @@ void FT6336U::task()
 
         if (flags == FT6336U_INT_RTOS_FLAG)
         {
-            if (read())
+            if (!read())
             {
-                BSP_LED_Toggle(LED_BLUE);
+                // TODO: Error handling
             }
+            // Should be removed when switching to custom board.
+            if (point.status == 1)
+                BSP_LED_On(LED_BLUE);
+            else if (point.status == 0)
+
+                BSP_LED_Off(LED_BLUE);
         }
     }
+}
+
+void FT6336U::GetTouchData(TouchData *data)
+{
+    if (osMutexAcquire(dataMutex, 0) != osOK)
+        return;
+    if (data != nullptr)
+    {
+        *data = point;
+    }
+    osMutexRelease(dataMutex);
 }
