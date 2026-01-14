@@ -57,7 +57,8 @@ void SensorHandler::sensorTask()
         {
             if (var != nullptr && var->sensor != nullptr)
             {
-                Drivers::SensorMessage msg = var->sensor->read();
+                Drivers::SensorMessage msg;
+                var->sensor->read(&msg);
 
                 processData(msg, var->queueHandle);
             }

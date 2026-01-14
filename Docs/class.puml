@@ -61,6 +61,12 @@ namespace Drivers {
         }
     }
     namespace I2C {
+        class I2CDevice {
+            # I2CHandleTypeDef* I2C
+            + I2CDevice(I2C_HandleTypeDef* handle, uint8_t)
+        }
+
+
         class FT6336U {
 
         }
@@ -71,8 +77,7 @@ namespace Drivers {
     }
 }
 
-
-' This syntax means Circle implements Shape
+'Relations
 MainC --> app_main
 app_main --> DisplayHandler
 app_main --> TouchHandler
@@ -86,7 +91,10 @@ DisplayScreenBase <|-- Bootscreen
 TouchHandler --> TouchDriverBase
 SensorHandler --> SensorDriverBase
 
-DisplayDriverBase <|-- ST7796
-TouchDriverBase <|-- FT6336U
-SensorDriverBase <|-- SCD40
+I2CDevice <|-- FT6336U
+I2CDevice <|-- SCD40
+
+DisplayDriverBase <|.. ST7796
+TouchDriverBase <|.. FT6336U
+SensorDriverBase <|.. SCD40
 @enduml
