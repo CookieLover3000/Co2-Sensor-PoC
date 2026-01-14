@@ -8,50 +8,56 @@ using namespace Drivers::I2C;
 
 void SCD40::init()
 {
-    HAL_I2C_Master_Transmit(hi2c, scd40_address, start_periodic_measurement, WRITE_MEASUREMENT_COMMAND_SIZE, 100);
+    I2CDevice::initI2C();
+    I2CTransmit(scd40_address, start_periodic_measurement, WRITE_MEASUREMENT_COMMAND_SIZE, 100, osWaitForever);
 }
 
 // SCD40.cpp
-SensorMessage SCD40::read()
+bool SCD40::read(SensorMessage *msg)
 {
     uint8_t raw_data[9];
+    bool success = true;
 
     // Set message type.
-    SensorMessage msg;
-    msg.type = SensorType::SCD40;
+    // SensorMessage msg;
+    msg->type = SensorType::SCD40;
 
-    if (HAL_I2C_Mem_Read(hi2c, scd40_address, read_measurement, I2C_MEMADD_SIZE_16BIT, raw_data, 9, 100) == HAL_OK)
+    if (I2CTransmitRead(scd40_address, read_measurement, I2C_MEMADD_SIZE_16BIT, raw_data, 9, 100, 0) != HAL_OK)
+
     {
-        if (calculate_crc8(&raw_data[0], 2) == raw_data[2])
-        {
-            msg.payload.scd40.co2 = (raw_data[0] << 8) | raw_data[1];
-        }
-        else
-        {
-            // TODO: Implement error handling
-        }
-
-        if (calculate_crc8(&raw_data[3], 2) == raw_data[5])
-        {
-            uint16_t temp_raw = (raw_data[3] << 8) | raw_data[4];
-            msg.payload.scd40.temperature = -45.0f + 175.0f * (float)temp_raw / 65536.0f;
-        }
-        else
-        {
-            // TODO: Implement error handling
-        }
-
-        if (calculate_crc8(&raw_data[6], 2) == raw_data[8])
-        {
-            uint16_t humid_raw = (raw_data[6] << 8) | raw_data[7];
-            msg.payload.scd40.humidity = 100.0f * (float)humid_raw / 65536.0f;
-        }
-        else
-        {
-            // TODO: Implement error handling
-        }
+        return false;
     }
-    return msg;
+
+    if (calculate_crc8(&raw_data[0], 2) == raw_data[2])
+    {
+        msg->payload.scd40.co2 = (raw_data[0] << 8) | raw_data[1];
+    }
+    else
+    {
+        success = false;
+    }
+
+    if (calculate_crc8(&raw_data[3], 2) == raw_data[5])
+    {
+        uint16_t temp_raw = (raw_data[3] << 8) | raw_data[4];
+        msg->payload.scd40.temperature = -45.0f + 175.0f * (float)temp_raw / 65536.0f;
+    }
+    else
+    {
+        success = false;
+    }
+
+    if (calculate_crc8(&raw_data[6], 2) == raw_data[8])
+    {
+        uint16_t humid_raw = (raw_data[6] << 8) | raw_data[7];
+        msg->payload.scd40.humidity = 100.0f * (float)humid_raw / 65536.0f;
+    }
+    else
+    {
+        success = false;
+    }
+
+    return success;
 }
 
 SensorType SCD40::getType()

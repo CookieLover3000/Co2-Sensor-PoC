@@ -1,7 +1,7 @@
 #ifndef FT6336U_H
 #define FT6336U_H
 
-#include "SensorDriverBase.hpp"
+#include "I2CDevice.hpp"
 #include "cmsis_os2.h"
 #include "stm32wbxx_hal.h"
 
@@ -14,10 +14,10 @@ namespace Drivers
 {
 namespace I2C
 {
-class FT6336U
+class FT6336U : I2CDevice
 {
   public:
-    FT6336U(I2C_HandleTypeDef *handler) : hi2c(handler) { instance = this; }
+    FT6336U(I2C_HandleTypeDef *handle) : I2CDevice(handle) { instance = this; }
     ~FT6336U() {}
     virtual void init();
     virtual bool read();
@@ -25,7 +25,6 @@ class FT6336U
     friend void ::HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
   private:
-    I2C_HandleTypeDef *hi2c;
     static FT6336U *instance;
     osThreadId_t touchTaskHandle;
     volatile uint8_t touch_detected = 0;

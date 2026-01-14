@@ -40,7 +40,7 @@ class SensorDriverBase
   public:
     virtual ~SensorDriverBase() = default;
     virtual void init() = 0;
-    virtual SensorMessage read() = 0;
+    virtual bool read(SensorMessage *) = 0;
     virtual SensorType getType() = 0;
 };
 } // namespace Drivers

@@ -2,8 +2,8 @@
 #include "cmsis_os2.h"
 #include "main.h"
 #include "stm32wbxx_hal.h"
+#include "stm32wbxx_hal_def.h"
 #include "stm32wbxx_nucleo.h"
-#include <SensorDriverBase.hpp>
 #include <stdint.h>
 
 #define FT6336U_ADDR  (0x38 << 1) // Standard I2C address
@@ -22,6 +22,7 @@ FT6336U *FT6336U::instance = nullptr;
 
 void FT6336U::init()
 {
+    I2CDevice::initI2C();
     touchTaskHandle = osThreadNew(FT6336U::taskWrapper, this, &touchTask_attributes);
 }
 
@@ -29,7 +30,7 @@ bool FT6336U::read()
 {
     uint8_t data[6];
 
-    if (HAL_I2C_Mem_Read(hi2c, FT6336U_ADDR, REG_TD_STATUS, I2C_MEMADD_SIZE_8BIT, data, 6, 100) != HAL_OK)
+    if (I2CTransmitRead(FT6336U_ADDR, REG_TD_STATUS, I2C_MEMADD_SIZE_8BIT, data, 6, 100, 0) != HAL_OK)
     {
         return false;
     }
@@ -44,12 +45,12 @@ bool FT6336U::read()
         point.status = 1;
         return true;
     }
-
     return false;
 }
-// using this callback here is far from optimal, but it doesn't matter for this project so I will leave it like this
-// if you find this repository and have more than one GPIO Interrupt you should probably have this defined somewhere
-// else.
+
+// using this callback here is far from optimal, but it doesn't matter for this project so I will leave it like this.
+// If you find this repository when searching for a FT6336U driver and have more than one GPIO Interrupt you should
+// probably have this defined somewhere else.
 extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == TOUCH_INT_Pin && FT6336U::instance != nullptr)
