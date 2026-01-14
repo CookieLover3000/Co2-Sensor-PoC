@@ -2,9 +2,11 @@
 #include "DisplayDriverBase.hpp"
 #include "DisplayScreenBase.hpp"
 #include "ST7796.hpp"
+#include "TouchHandler.hpp"
 #include "cmsis_os.h"
 #include "homescreen.hpp"
 #include "main.h"
+#include <lvgl.h>
 
 /* Thread Handles */
 
@@ -44,6 +46,12 @@ void DisplayHandler::LVGLTask()
     {
         driver->lvglDisplayInit();
     }
+
+    // Initialize the touch interface.
+    lv_indev_t *indev = lv_indev_create();
+    lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
+    lv_indev_set_read_cb(indev, touchHandler->lvglTouchPad_cb);
+    lv_indev_set_user_data(indev, touchHandler);
 
     homescreen.init();
 

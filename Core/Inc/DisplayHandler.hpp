@@ -2,13 +2,17 @@
 #include "DisplayScreenBase.hpp"
 #include "SensorHandler.hpp"
 #include "homescreen.hpp"
+#include <TouchHandler.hpp>
 
 namespace App
 {
 class DisplayHandler
 {
   public:
-    DisplayHandler(Drivers::DisplayDriverBase *drv, SensorHandler &sensor) : homescreen(sensor), driver(drv) {}
+    DisplayHandler(Drivers::DisplayDriverBase *drv, SensorHandler &sensor, TouchHandler *touch)
+        : touchHandler(touch), homescreen(sensor), driver(drv)
+    {
+    }
     void init();
     void setScreen(UI::DisplayScreenBase &newScreen);
     void showHomescreen();
@@ -16,6 +20,8 @@ class DisplayHandler
   private:
     static void taskWrapper(void *argument);
     void LVGLTask();
+
+    TouchHandler *touchHandler;
     UI::Homescreen homescreen;
     Drivers::DisplayDriverBase *driver;
     UI::DisplayScreenBase *currentScreen = nullptr;
