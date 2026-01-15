@@ -2,8 +2,9 @@
 #define HOMESCREEN_H
 
 #include "DisplayScreenBase.hpp"
+#include "SensorDriverBase.hpp"
 #include "SensorHandler.hpp"
-#include "lvgl.h"
+#include <lvgl.h>
 
 namespace UI
 {
@@ -17,9 +18,12 @@ class Homescreen : public DisplayScreenBase
     virtual void init(void) override;
     virtual void update(void) override;
     virtual void destroy(void) override;
+    virtual bool shouldSwitch(void) override;
 
   private:
     App::SensorHandler &sensor;
+    Drivers::SCD40Data sensorData = {0, 0, 0};
+
     typedef enum
     {
         CO2,
@@ -92,6 +96,7 @@ class Homescreen : public DisplayScreenBase
     void init_widget(Widget_t *widget);
     void update_widget_label(Widget_t *widget, const char *co2, const char *temp, const char *hum, uint16_t co2_value);
     void change_widget(Widget_t *widget, Monitor new_monitor);
+    bool getSensorData();
 };
 
 } // namespace UI
