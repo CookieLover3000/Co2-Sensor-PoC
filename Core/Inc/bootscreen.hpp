@@ -3,7 +3,6 @@
 
 #include "DisplayScreenBase.hpp"
 #include "NonBlockingTimer.h"
-#include "SensorHandler.hpp"
 #include <lvgl.h>
 namespace UI
 {
