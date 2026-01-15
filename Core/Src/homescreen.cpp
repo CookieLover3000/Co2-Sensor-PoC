@@ -27,19 +27,37 @@ Homescreen::~Homescreen()
 
 void Homescreen::init(void)
 {
-    homescreen_screen = lv_screen_active();
+    homescreen_screen = lv_obj_create(NULL);
     lv_obj_clear_flag(homescreen_screen, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_bg_color(homescreen_screen, lv_color_black(), LV_PART_MAIN);
     lv_obj_set_style_bg_opa(homescreen_screen, LV_OPA_100, LV_PART_MAIN);
 
+    while (!getSensorData())
+        osDelay(10);
+
     init_widget(&main_widget);
     init_widget(&upper_widget);
     init_widget(&lower_widget);
+
+    lv_screen_load(homescreen_screen);
 }
 
 void Homescreen::init_widget(Widget_t *widget)
 {
-    // values between 400-600 are safe. Above 600 is bad and above 1000 really bad.
+    // I don't like how I did this, but it works.
+    uint16_t temp_int = (uint16_t)sensorData.temperature;
+    uint16_t temp_dec = (uint16_t)((sensorData.temperature - temp_int) * 10);
+    uint16_t humid_int = (uint16_t)sensorData.humidity;
+
+    char co2_string[6];
+    char temperature_string[12];
+    char humidity_string[10];
+
+    snprintf(co2_string, sizeof(co2_string), "%u", sensorData.co2);
+    snprintf(temperature_string, sizeof(temperature_string), "%d.%d", temp_int, temp_dec);
+    snprintf(humidity_string, sizeof(humidity_string), "%u", humid_int);
+
+    // values between 400-600 are good. Above 750 are fine and above 1000 is bad.
     widget->arc = lv_arc_create(homescreen_screen);
 
     lv_arc_set_range(widget->arc, 0, 100);
@@ -105,10 +123,27 @@ void Homescreen::init_widget(Widget_t *widget)
     {
 
     case CO2:
-        lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_dangerous, LV_PART_INDICATOR);
-        lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_dangerous, LV_PART_MAIN);
+        // I don't like how I did this, but it works.
+        if (sensorData.co2 >= CO2_DANGEROUS_VALUE)
+        {
+            lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_dangerous, LV_PART_INDICATOR);
+            lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_dangerous, LV_PART_MAIN);
+            widget->active_color = homescreen_status_colors.co2_dangerous;
+        }
+        else if (sensorData.co2 >= CO2_WARNING_VALUE && sensorData.co2 < CO2_DANGEROUS_VALUE)
+        {
+            lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_warning, LV_PART_INDICATOR);
+            lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_warning, LV_PART_MAIN);
+            widget->active_color = homescreen_status_colors.co2_warning;
+        }
+        else
+        {
+            lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_safe, LV_PART_INDICATOR);
+            lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_safe, LV_PART_MAIN);
+            widget->active_color = homescreen_status_colors.co2_safe;
+        }
 
-        lv_label_set_text(widget->value_label, "1000");
+        lv_label_set_text(widget->value_label, co2_string);
 
         lv_label_set_text(widget->symbol_label, "PPM");
 
@@ -117,14 +152,14 @@ void Homescreen::init_widget(Widget_t *widget)
     case TEMPERATURE:
         lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.temperature, LV_PART_INDICATOR);
         lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.temperature, LV_PART_MAIN);
-        lv_label_set_text(widget->value_label, "19.5");
+        lv_label_set_text(widget->value_label, temperature_string);
         lv_label_set_text(widget->symbol_label, "°C");
         break;
 
     case HUMIDITY:
         lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.humidity, LV_PART_INDICATOR);
         lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.humidity, LV_PART_MAIN);
-        lv_label_set_text(widget->value_label, "46");
+        lv_label_set_text(widget->value_label, humidity_string);
         lv_label_set_text(widget->symbol_label, "%");
         break;
     }
@@ -170,11 +205,21 @@ void Homescreen::update_widget_label(Widget_t *widget, const char *co2, const ch
     }
 }
 
-extern osMessageQueueId_t handle;
+bool Homescreen::getSensorData()
+{
+    osMessageQueueId_t queueHandle = sensor.getQueueHandle(CO2_SENSOR_QUEUE_HANDLE_INDEX);
+
+    Drivers::SCD40Data received_data = {0, 0, 0};
+    if (osMessageQueueGet(queueHandle, &received_data, NULL, 0) == osOK)
+    {
+        sensorData = received_data;
+        return true;
+    }
+    return false;
+}
 
 void Homescreen::update()
 {
-    Drivers::SCD40Data received_data = {0};
     char co2_string[6];
     char temperature_string[12];
     char humidity_string[10];
@@ -184,14 +229,13 @@ void Homescreen::update()
     if (queueHandle == NULL)
         return;
 
-    if (osMessageQueueGet(queueHandle, &received_data, NULL, 0) == osOK)
+    if (getSensorData())
     {
+        uint16_t temp_int = (uint16_t)sensorData.temperature;
+        uint16_t temp_dec = (uint16_t)((sensorData.temperature - temp_int) * 10);
+        uint16_t humid_int = (uint16_t)sensorData.humidity;
 
-        uint16_t temp_int = (uint16_t)received_data.temperature;
-        uint16_t temp_dec = (uint16_t)((received_data.temperature - temp_int) * 10);
-        uint16_t humid_int = (uint16_t)received_data.humidity;
-
-        snprintf(co2_string, sizeof(co2_string), "%u", received_data.co2);
+        snprintf(co2_string, sizeof(co2_string), "%u", sensorData.co2);
         snprintf(temperature_string, sizeof(temperature_string), "%d.%d", temp_int, temp_dec);
         snprintf(humidity_string, sizeof(humidity_string), "%u", humid_int);
 
@@ -199,7 +243,7 @@ void Homescreen::update()
 
         for (uint8_t i = 0; i < WIDGET_AMOUNT; i++)
         {
-            update_widget_label(widgets[i], co2_string, temperature_string, humidity_string, received_data.co2);
+            update_widget_label(widgets[i], co2_string, temperature_string, humidity_string, sensorData.co2);
         }
     }
 }
@@ -231,10 +275,15 @@ __attribute__((unused)) void Homescreen::change_widget(Widget_t *widget, Monitor
     }
 }
 
+bool Homescreen::shouldSwitch()
+{
+    return false; // TODO: implement this logic when settings are added.
+}
+
 void Homescreen::destroy(void)
 {
     if (homescreen_screen)
-        lv_obj_del(homescreen_screen);
+        lv_obj_del_async(homescreen_screen);
 
     homescreen_screen = NULL;
     main_widget.arc = NULL;
