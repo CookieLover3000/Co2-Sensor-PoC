@@ -3,6 +3,7 @@
 #include "NonBlockingTimer.h"
 #include "SensorHandler.hpp"
 #include "TouchHandler.hpp"
+#include "bootscreen.hpp"
 #include "homescreen.hpp"
 #include <cstdint>
 
@@ -11,13 +12,21 @@ namespace App
 class DisplayHandler
 {
   public:
+    enum ScreenState
+    {
+        BOOT,
+        HOME,
+        SETTINGS,
+    };
+
     DisplayHandler(Drivers::DisplayDriverBase *drv, SensorHandler &sensor, TouchHandler *touch)
-        : touchHandler(touch), homescreen(sensor), display(drv)
+        : touchHandler(touch), display(drv), homescreen(sensor)
     {
     }
     void init();
     void setScreen(UI::DisplayScreenBase &newScreen);
     void showHomescreen();
+    void switchScreen(ScreenState newState);
 
   private:
     static void taskWrapper(void *argument);
@@ -25,23 +34,29 @@ class DisplayHandler
     void updateBrightnessLogic();
 
     TouchHandler *touchHandler;
-    UI::Homescreen homescreen;
-    NonBlockingTimer timer;
     Drivers::DisplayDriverBase *display;
-    UI::DisplayScreenBase *currentScreen = nullptr;
-    osThreadId_t LvglTaskHandle;
 
+    osThreadId_t LvglTaskHandle;
     const osThreadAttr_t LvglTaskHandle_attributes = {
         .name = "LvglTask",
         .stack_size = 8192,
         .priority = (osPriority_t)osPriorityAboveNormal6,
     };
 
+    // state machine
+    ScreenState currentState;
+    UI::Homescreen homescreen;
+    UI::Bootscreen bootscreen;
+    UI::DisplayScreenBase *currentScreen = nullptr;
+
+    bool bootFinished = false;
+
     // display brightness control
+    NonBlockingTimer brightnessTimer;
     struct DisplaySettings
     {
         uint8_t max_brightness = 100;       // percentage
-        uint8_t min_brightness = 0;         // percentage
+        uint8_t min_brightness = 5;         // percentage
         uint32_t display_off_delay = 60000; // one minute
     };
     DisplaySettings settings;
