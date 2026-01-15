@@ -16,7 +16,6 @@ using namespace App;
 
 void DisplayHandler::init()
 {
-
     LvglTaskHandle = osThreadNew(DisplayHandler::taskWrapper, this, &LvglTaskHandle_attributes);
 
     if (LvglTaskHandle == NULL)
@@ -40,11 +39,11 @@ void DisplayHandler::updateBrightnessLogic()
     if (touchHandler->isTouched())
     {
         display->setBrightness(settings.max_brightness);
-        timer.start(settings.display_off_delay);
+        brightnessTimer.start(settings.display_off_delay);
         isFading = false;
     }
 
-    if (!isFading && timer.isExpired())
+    if (!isFading && brightnessTimer.isExpired())
     {
         isFading = true;
         fadeStartTime = osKernelGetTickCount();
@@ -71,6 +70,36 @@ void DisplayHandler::updateBrightnessLogic()
     }
 }
 
+void DisplayHandler::switchScreen(ScreenState newState)
+{
+    UI::DisplayScreenBase *nextScreen = nullptr;
+
+    switch (newState)
+    {
+    case BOOT:
+        nextScreen = &bootscreen;
+        break;
+    case HOME:
+        nextScreen = &homescreen;
+        break;
+    case SETTINGS:
+        break;
+    }
+
+    if (nextScreen)
+    {
+        nextScreen->init();
+    }
+
+    if (currentScreen)
+    {
+        currentScreen->destroy();
+    }
+
+    currentState = newState;
+    currentScreen = nextScreen;
+}
+
 void DisplayHandler::taskWrapper(void *argument)
 {
     DisplayHandler *handler = static_cast<DisplayHandler *>(argument);
@@ -78,7 +107,7 @@ void DisplayHandler::taskWrapper(void *argument)
 }
 void DisplayHandler::LVGLTask()
 {
-    timer.start(settings.display_off_delay);
+    brightnessTimer.start(settings.display_off_delay);
     if (!display)
     {
         // TODO: Error handling
@@ -92,13 +121,22 @@ void DisplayHandler::LVGLTask()
     lv_indev_set_read_cb(indev, touchHandler->lvglTouchPad_cb);
     lv_indev_set_user_data(indev, touchHandler);
 
-    homescreen.init();
+    currentState = BOOT;
+    currentScreen = &bootscreen;
+    currentScreen->init();
 
     while (1)
     {
-        updateBrightnessLogic();
+        if (currentScreen->shouldSwitch())
+        {
+            if (currentState == BOOT)
+            {
+                switchScreen(HOME);
+            }
+        }
 
-        homescreen.update();
+        updateBrightnessLogic();
+        currentScreen->update();
         lv_timer_handler();
 
         osDelay(10);
