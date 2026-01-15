@@ -69,6 +69,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     Core/Src/homescreen.cpp
+    Core/Src/bootscreen.cpp
     Core/Src/homescreen_anim.c
     Core/Src/app_main.cpp
     Core/Src/DisplayHandler.cpp
@@ -78,10 +79,12 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/FT6336U.cpp
     Core/Src/I2CDevice.cpp
     Core/Src/TouchHandler.cpp
+    
     fonts/custom_font_montserrat_44.c
     fonts/custom_font_montserrat_34.c
     fonts/custom_font_montserrat_18.c
     fonts/custom_font_montserrat_22.c
+    fonts/custom_font_montserrat_48.c
 )
 
 
