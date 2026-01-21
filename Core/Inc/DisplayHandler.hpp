@@ -1,5 +1,6 @@
 #include "DisplayDriverBase.hpp"
 #include "DisplayScreenBase.hpp"
+#include "DisplaySettings.hpp"
 #include "NonBlockingTimer.h"
 #include "SensorHandler.hpp"
 #include "TouchHandler.hpp"
@@ -53,13 +54,14 @@ class DisplayHandler
 
     // display brightness control
     NonBlockingTimer brightnessTimer;
-    struct DisplaySettings
-    {
-        uint8_t max_brightness = 100;       // percentage
-        uint8_t min_brightness = 5;         // percentage
-        uint32_t display_off_delay = 60000; // one minute
-    };
-    DisplaySettings settings;
+    Settings::DisplaySettings settings;
+    // struct DisplaySettings
+    // {
+    //     uint8_t max_brightness = 100;       // percentage
+    //     uint8_t min_brightness = 5;         // percentage
+    //     uint32_t display_off_delay = 60000; // one minute
+    // };
+    // DisplaySettings settings;
 
     uint32_t fadeStartTime = 0;
     uint32_t fadeDuration = 4000;
