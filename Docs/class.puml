@@ -45,6 +45,16 @@ namespace UI {
     }
 }
 
+namespace Settings {
+    class DisplaySettings {
+
+    }
+
+    class SensorSettings {
+
+    }
+}
+
 namespace Drivers {
 
     interface DisplayDriverBase <<interface>>{
@@ -91,6 +101,7 @@ app_main --> SensorHandler
 
 DisplayHandler --> TouchHandler
 DisplayHandler --> NonBlockingTimer
+Bootscreen --> NonBlockingTimer
 DisplayHandler --> DisplayDriverBase
 DisplayHandler o-- DisplayScreenBase
 DisplayScreenBase <|-- Homescreen
@@ -98,6 +109,9 @@ DisplayScreenBase <|-- SettingsScreen
 DisplayScreenBase <|-- Bootscreen
 TouchHandler --> TouchDriverBase
 SensorHandler --> SensorDriverBase
+
+DisplaySettings <-- SettingsScreen
+DisplaySettings <-- DisplayHandler
 
 I2CDevice <|-- FT6336U
 I2CDevice <|-- SCD40
