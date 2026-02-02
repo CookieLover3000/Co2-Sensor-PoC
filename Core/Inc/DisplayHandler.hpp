@@ -1,3 +1,6 @@
+#ifndef DISPLAY_HANDLER_H
+#define DISPLAY_HANDLER_H
+
 #include "DisplayDriverBase.hpp"
 #include "DisplayScreenBase.hpp"
 #include "DisplaySettings.hpp"
@@ -26,10 +29,11 @@ class DisplayHandler
     }
     void init();
     void setScreen(UI::DisplayScreenBase &newScreen);
-    void showHomescreen();
     void switchScreen(ScreenState newState);
+    void stateMachine();
 
   private:
+    static void lvglLongPressCb(lv_event_t *e);
     static void taskWrapper(void *argument);
     void LVGLTask();
     void updateBrightnessLogic();
@@ -63,10 +67,14 @@ class DisplayHandler
     // };
     // DisplaySettings settings;
 
+    static constexpr uint16_t long_press_time = 2000;
+
+    static constexpr uint32_t fadeDuration = 4000;
     uint32_t fadeStartTime = 0;
-    uint32_t fadeDuration = 4000;
     int startBrightness = 100;
     bool isFading = false;
 };
 
 } // namespace App
+
+#endif /* DISPLAY_HANDLER_H */

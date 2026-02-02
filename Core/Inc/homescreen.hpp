@@ -19,6 +19,7 @@ class Homescreen : public DisplayScreenBase
     virtual void update(void) override;
     virtual void destroy(void) override;
     virtual bool shouldSwitch(void) override;
+    virtual void handleLongPress(void) override;
 
   private:
     App::SensorHandler &sensor;
@@ -97,6 +98,8 @@ class Homescreen : public DisplayScreenBase
     void update_widget_label(Widget_t *widget, const char *co2, const char *temp, const char *hum, uint16_t co2_value);
     void change_widget(Widget_t *widget, Monitor new_monitor);
     bool getSensorData();
+
+    bool screenSwitch = false;
 };
 
 } // namespace UI

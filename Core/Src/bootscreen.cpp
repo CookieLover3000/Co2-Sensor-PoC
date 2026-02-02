@@ -49,3 +49,8 @@ void Bootscreen::destroy()
     bootscreen_screen = NULL;
     boot_text = NULL;
 }
+
+void Bootscreen::handleLongPress()
+{
+    return;
+}

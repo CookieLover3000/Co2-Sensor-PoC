@@ -16,6 +16,7 @@ class Bootscreen : public DisplayScreenBase
     virtual void update(void) override;
     virtual void destroy(void) override;
     virtual bool shouldSwitch(void) override;
+    virtual void handleLongPress(void) override;
 
   private:
     lv_obj_t *bootscreen_screen = NULL;

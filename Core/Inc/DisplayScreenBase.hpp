@@ -11,6 +11,7 @@ class DisplayScreenBase
     virtual void update(void) = 0;
     virtual void destroy(void) = 0;
     virtual bool shouldSwitch(void) = 0;
+    virtual void handleLongPress(void) = 0;
 };
 } // namespace UI
 
