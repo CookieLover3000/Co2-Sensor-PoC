@@ -277,11 +277,18 @@ __attribute__((unused)) void Homescreen::change_widget(Widget_t *widget, Monitor
 
 bool Homescreen::shouldSwitch()
 {
-    return false; // TODO: implement this logic when settings are added.
+    return screenSwitch;
+}
+
+void Homescreen::handleLongPress()
+{
+    screenSwitch = true;
 }
 
 void Homescreen::destroy(void)
 {
+    screenSwitch = false;
+
     if (homescreen_screen)
         lv_obj_del_async(homescreen_screen);
 

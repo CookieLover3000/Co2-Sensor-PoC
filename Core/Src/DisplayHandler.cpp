@@ -36,6 +36,9 @@ void DisplayHandler::setScreen(UI::DisplayScreenBase &newScreen)
 
 void DisplayHandler::updateBrightnessLogic()
 {
+    if (currentState == BOOT)
+        return;
+
     if (touchHandler->isTouched())
     {
         display->setBrightness(settings.getMaxBrightness());
@@ -70,6 +73,26 @@ void DisplayHandler::updateBrightnessLogic()
     }
 }
 
+void DisplayHandler::lvglLongPressCb(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (code == LV_EVENT_LONG_PRESSED)
+    {
+
+        lv_obj_t *touchedObj = lv_indev_get_active_obj();
+
+        if (touchedObj != lv_screen_active())
+            return;
+
+        DisplayHandler *instance = (DisplayHandler *)lv_event_get_user_data(e);
+        if (instance)
+        {
+            instance->currentScreen->handleLongPress();
+        }
+    }
+}
+
 void DisplayHandler::switchScreen(ScreenState newState)
 {
     UI::DisplayScreenBase *nextScreen = nullptr;
@@ -83,6 +106,7 @@ void DisplayHandler::switchScreen(ScreenState newState)
         nextScreen = &homescreen;
         break;
     case SETTINGS:
+        return;
         break;
     }
 
@@ -98,6 +122,23 @@ void DisplayHandler::switchScreen(ScreenState newState)
 
     currentState = newState;
     currentScreen = nextScreen;
+}
+
+void DisplayHandler::stateMachine()
+{
+    if (currentScreen->shouldSwitch())
+    {
+        switch (currentState)
+        {
+        case BOOT:
+            switchScreen(HOME);
+            break;
+        case HOME:
+            switchScreen(SETTINGS);
+        case SETTINGS:
+            break;
+        }
+    }
 }
 
 void DisplayHandler::taskWrapper(void *argument)
@@ -120,6 +161,9 @@ void DisplayHandler::LVGLTask()
     lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
     lv_indev_set_read_cb(indev, touchHandler->lvglTouchPad_cb);
     lv_indev_set_user_data(indev, touchHandler);
+    lv_indev_set_long_press_time(indev, long_press_time);
+
+    lv_indev_add_event_cb(indev, DisplayHandler::lvglLongPressCb, LV_EVENT_LONG_PRESSED, this);
 
     currentState = BOOT;
     currentScreen = &bootscreen;
@@ -127,13 +171,7 @@ void DisplayHandler::LVGLTask()
 
     while (1)
     {
-        if (currentScreen->shouldSwitch())
-        {
-            if (currentState == BOOT)
-            {
-                switchScreen(HOME);
-            }
-        }
+        stateMachine();
 
         updateBrightnessLogic();
         currentScreen->update();
