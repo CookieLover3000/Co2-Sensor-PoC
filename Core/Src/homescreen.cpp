@@ -295,8 +295,11 @@ void Homescreen::destroy(void)
     homescreen_screen = NULL;
     main_widget.arc = NULL;
     main_widget.value_label = NULL;
+    main_widget.symbol_label = NULL;
     upper_widget.arc = NULL;
     upper_widget.value_label = NULL;
+    upper_widget.symbol_label = NULL;
     lower_widget.arc = NULL;
     lower_widget.value_label = NULL;
+    upper_widget.symbol_label = NULL;
 }

@@ -106,7 +106,7 @@ void DisplayHandler::switchScreen(ScreenState newState)
         nextScreen = &homescreen;
         break;
     case SETTINGS:
-        return;
+        nextScreen = &settingsscreen;
         break;
     }
 
@@ -135,7 +135,9 @@ void DisplayHandler::stateMachine()
             break;
         case HOME:
             switchScreen(SETTINGS);
+            break;
         case SETTINGS:
+            switchScreen(HOME);
             break;
         }
     }
