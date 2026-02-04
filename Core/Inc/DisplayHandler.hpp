@@ -6,6 +6,7 @@
 #include "DisplaySettings.hpp"
 #include "NonBlockingTimer.h"
 #include "SensorHandler.hpp"
+#include "SettingsScreen.hpp"
 #include "TouchHandler.hpp"
 #include "bootscreen.hpp"
 #include "homescreen.hpp"
@@ -52,6 +53,7 @@ class DisplayHandler
     ScreenState currentState;
     UI::Homescreen homescreen;
     UI::Bootscreen bootscreen;
+    UI::SettingsScreen settingsscreen;
     UI::DisplayScreenBase *currentScreen = nullptr;
 
     bool bootFinished = false;
@@ -67,7 +69,7 @@ class DisplayHandler
     // };
     // DisplaySettings settings;
 
-    static constexpr uint16_t long_press_time = 2000;
+    static constexpr uint16_t long_press_time = 1000;
 
     static constexpr uint32_t fadeDuration = 4000;
     uint32_t fadeStartTime = 0;

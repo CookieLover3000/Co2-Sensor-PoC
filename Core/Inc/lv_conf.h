@@ -727,7 +727,7 @@
 
 #define LV_USE_ARCLABEL  0
 
-#define LV_USE_BAR        0
+#define LV_USE_BAR        1
 
 #define LV_USE_BUTTON        1
 
@@ -781,11 +781,11 @@
 
 #define LV_USE_MSGBOX     0
 
-#define LV_USE_ROLLER     0   /**< Requires: lv_label */
+#define LV_USE_ROLLER     1   /**< Requires: lv_label */
 
 #define LV_USE_SCALE      0
 
-#define LV_USE_SLIDER     0   /**< Requires: lv_bar */
+#define LV_USE_SLIDER     1   /**< Requires: lv_bar */
 
 #define LV_USE_SPAN       0
 #if LV_USE_SPAN
