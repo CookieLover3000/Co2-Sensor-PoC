@@ -21,6 +21,11 @@ class SettingsScreen : public DisplayScreenBase
     virtual void handleLongPress(void) override;
 
   private:
+    /* variables */
+    Settings::DisplaySettings settings;
+    bool screenSwitch = false;
+    /* end variables */
+
     /* button callback stuff */
 
     // Amount of buttons that can be used to set the delay before the display turns off.
@@ -44,13 +49,6 @@ class SettingsScreen : public DisplayScreenBase
     size_t selected_button_index = 0;
 
     /* end button callback stuff */
-
-    /* LVGL objects */
-    struct
-    {
-        lv_obj_t *arc;
-        lv_obj_t *roller;
-    } Widget_t;
 
     struct BrightnessDurrButton_t
     {
@@ -83,6 +81,36 @@ class SettingsScreen : public DisplayScreenBase
         lv_obj_t *label = nullptr;
     };
 
+    struct Widget_t
+    {
+        lv_obj_t *arc;
+        lv_obj_t *roller;
+        Settings::DisplaySettings::WidgetType type;
+        Settings::DisplaySettings::Monitor monitor;
+        static constexpr lv_color_t active_color = LV_COLOR_MAKE(0x00, 0xAD, 0xEE);
+    };
+
+    Widget_t mainWidget = {
+        .arc = NULL,
+        .roller = NULL,
+        .type = Settings::DisplaySettings::MAIN,
+        .monitor = settings.getMainMonitor(),
+    };
+
+    Widget_t upperWidget = {
+        .arc = NULL,
+        .roller = NULL,
+        .type = Settings::DisplaySettings::UPPER,
+        .monitor = settings.getUpperMonitor(),
+    };
+
+    Widget_t lowerWidget = {
+        .arc = NULL,
+        .roller = NULL,
+        .type = Settings::DisplaySettings::LOWER,
+        .monitor = settings.getLowerMonitor(),
+    };
+
     BrightnessSettings_t brightnessSettings = {};
     DoneButton_t done = {};
     BrightnessMenuButton_t brightnessMenu = {};
@@ -91,17 +119,13 @@ class SettingsScreen : public DisplayScreenBase
 
     /* end LVGL objects */
 
-    /* variables */
-    Settings::DisplaySettings settings;
-
-    bool screenSwitch = false;
-    /* end variables */
-
     /* private functions */
     void initBrightnessControls(void);
     void initButtons(void);
     void checkBrightnessSlider(void);
     void toggleBrightnessControls(void);
+    void initWidget(Widget_t *widget);
+    void checkRollerValue(Widget_t *widget);
     // callbacks
     static void onDonePressed(lv_event_t *e);
     static void onBrightnessMenuPressed(lv_event_t *e);
