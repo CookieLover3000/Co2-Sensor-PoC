@@ -81,12 +81,13 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     Core/Src/TouchHandler.cpp
     Core/Src/DisplaySettings.cpp
     Core/Src/SettingsScreen.cpp
-    
+
+    fonts/custom_font_montserrat_48.c
     fonts/custom_font_montserrat_44.c
     fonts/custom_font_montserrat_34.c
-    fonts/custom_font_montserrat_18.c
+    fonts/custom_font_montserrat_26.c
     fonts/custom_font_montserrat_22.c
-    fonts/custom_font_montserrat_48.c
+    fonts/custom_font_montserrat_18.c
     fonts/custom_font_montserrat_16.c
     fonts/brightness_symbol_22.c
 )

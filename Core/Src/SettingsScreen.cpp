@@ -24,7 +24,9 @@ void SettingsScreen::init()
     lv_obj_set_style_bg_color(settingsscreen_screen, lv_color_black(), LV_PART_MAIN);
 
     lv_screen_load(settingsscreen_screen); // very important, don't forget again next time...
-
+    initWidget(&mainWidget);
+    initWidget(&upperWidget);
+    initWidget(&lowerWidget);
     initBrightnessControls();
     initButtons();
 }
@@ -118,6 +120,67 @@ void SettingsScreen::initBrightnessControls()
     }
 }
 
+void SettingsScreen::initWidget(Widget_t *widget)
+{
+
+    widget->arc = lv_arc_create(settingsscreen_screen);
+
+    lv_obj_set_style_bg_opa(widget->arc, 0, LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_color(widget->arc, Widget_t::active_color, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_width(widget->arc, 10, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_arc_set_bg_angles(widget->arc, 0, 360);
+    lv_arc_set_value(widget->arc, 100);
+
+    widget->roller = lv_roller_create(widget->arc);
+    lv_roller_set_options(widget->roller, "CO2\n°C\nRH", LV_ROLLER_MODE_NORMAL);
+    lv_obj_set_align(widget->roller, LV_ALIGN_CENTER);
+    lv_obj_set_style_text_font(widget->roller, &custom_font_montserrat_26, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(widget->roller, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(widget->roller, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(widget->roller, lv_color_hex(0x000000), LV_PART_SELECTED | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(widget->roller, 255, LV_PART_SELECTED | LV_STATE_DEFAULT);
+
+    uint16_t selected_index = settings.getMonitor(widget->type);
+    lv_roller_set_selected(widget->roller, selected_index, LV_ANIM_OFF);
+
+    switch (widget->type)
+    {
+    case Settings::DisplaySettings::CO2:
+        lv_obj_set_width(widget->arc, 213);
+        lv_obj_set_height(widget->arc, 213);
+        lv_obj_set_x(widget->arc, 66);
+        lv_obj_set_y(widget->arc, -3);
+        lv_obj_set_align(widget->arc, LV_ALIGN_LEFT_MID);
+        lv_obj_set_style_arc_width(widget->arc, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+        lv_obj_set_width(widget->roller, 180);
+        lv_obj_set_height(widget->roller, 40);
+        break;
+    case Settings::DisplaySettings::TEMPERATURE:
+        lv_obj_set_width(widget->arc, 134);
+        lv_obj_set_height(widget->arc, 134);
+        lv_obj_set_x(widget->arc, -66);
+        lv_obj_set_y(widget->arc, -77);
+        lv_obj_set_align(widget->arc, LV_ALIGN_RIGHT_MID);
+        lv_obj_set_style_arc_width(widget->arc, 8, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+        lv_obj_set_width(widget->roller, 100);
+        lv_obj_set_height(widget->roller, 40);
+        break;
+    case Settings::DisplaySettings::HUMIDITY:
+        lv_obj_set_width(widget->arc, 134);
+        lv_obj_set_height(widget->arc, 134);
+        lv_obj_set_x(widget->arc, -66);
+        lv_obj_set_y(widget->arc, 77);
+        lv_obj_set_align(widget->arc, LV_ALIGN_RIGHT_MID);
+        lv_obj_set_style_arc_width(widget->arc, 8, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+        lv_obj_set_width(widget->roller, 100);
+        lv_obj_set_height(widget->roller, 40);
+        break;
+    }
+}
+
 void SettingsScreen::initButtons(void)
 {
     done.button = lv_btn_create(settingsscreen_screen);
@@ -169,13 +232,36 @@ void SettingsScreen::toggleBrightnessControls()
 
 void SettingsScreen::update()
 {
-    // polling instead of callback because this is quick enough.
+    // polling instead of callback because this is quick enough and I'm lazy.
     checkBrightnessSlider();
+    checkRollerValue(&mainWidget);
+    checkRollerValue(&upperWidget);
+    checkRollerValue(&lowerWidget);
 }
 
 bool SettingsScreen::shouldSwitch()
 {
     return screenSwitch;
+}
+
+void SettingsScreen::checkRollerValue(Widget_t *widget)
+{
+    uint16_t selected_index = lv_roller_get_selected(widget->roller);
+
+    switch (selected_index)
+    {
+    case 0:
+        settings.setMonitor(widget->type, Settings::DisplaySettings::CO2);
+        break;
+    case 1:
+        settings.setMonitor(widget->type, Settings::DisplaySettings::TEMPERATURE);
+        break;
+    case 2:
+        settings.setMonitor(widget->type, Settings::DisplaySettings::HUMIDITY);
+        break;
+    default:
+        break;
+    }
 }
 
 void SettingsScreen::checkBrightnessSlider()
