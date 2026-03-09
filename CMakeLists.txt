@@ -88,6 +88,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     fonts/custom_font_montserrat_22.c
     fonts/custom_font_montserrat_48.c
     fonts/custom_font_montserrat_16.c
+    fonts/brightness_symbol_22.c
 )
 
 

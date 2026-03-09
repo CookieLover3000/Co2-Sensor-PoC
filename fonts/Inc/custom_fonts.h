@@ -10,5 +10,6 @@ LV_FONT_DECLARE(custom_font_montserrat_16);
 LV_FONT_DECLARE(custom_font_montserrat_18);
 LV_FONT_DECLARE(custom_font_montserrat_22);
 LV_FONT_DECLARE(custom_font_montserrat_48);
+LV_FONT_DECLARE(brightness_symbol_22);
 
 #endif /* CUSTOM_FONTS_H */
