@@ -130,6 +130,7 @@ void SettingsScreen::initWidget(Widget_t *widget)
     lv_obj_set_style_arc_width(widget->arc, 10, LV_PART_INDICATOR | LV_STATE_DEFAULT);
     lv_arc_set_bg_angles(widget->arc, 0, 360);
     lv_arc_set_value(widget->arc, 100);
+    lv_obj_remove_flag(widget->arc, LV_OBJ_FLAG_CLICKABLE);
 
     widget->roller = lv_roller_create(widget->arc);
     lv_roller_set_options(widget->roller, "CO2\n°C\nRH", LV_ROLLER_MODE_NORMAL);
