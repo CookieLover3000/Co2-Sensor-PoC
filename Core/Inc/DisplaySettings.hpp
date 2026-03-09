@@ -15,6 +15,17 @@ class DisplaySettings
     void setMinBrightness(uint8_t value) { minBrightness.store(value); }
     void setDisplayOffDelay(uint32_t value) { displayOffDelay.store(value); }
 
+    typedef enum
+    {
+        CO2,
+        TEMPERATURE,
+        HUMIDITY
+    } Monitor;
+
+    Monitor mainMonitor = CO2;
+    Monitor upperMonitor = TEMPERATURE;
+    Monitor lowerMonitor = HUMIDITY;
+
   private:
     static std::atomic<uint8_t> maxBrightness;    // percentage
     static std::atomic<uint8_t> minBrightness;    // percentage
