@@ -100,7 +100,7 @@ app_main --> TouchHandler
 app_main --> SensorHandler
 
 DisplayHandler --> TouchHandler
-DisplayHandler --> NonBlockingTimer
+DisplayHandler --> NonBlockingTimer 
 Bootscreen --> NonBlockingTimer
 DisplayHandler --> DisplayDriverBase
 DisplayHandler o-- DisplayScreenBase
@@ -111,7 +111,7 @@ TouchHandler --> TouchDriverBase
 SensorHandler --> SensorDriverBase
 
 DisplaySettings <-- SettingsScreen
-DisplaySettings <-- DisplayHandler
+DisplaySettings <-- Homescreen
 
 I2CDevice <|-- FT6336U
 I2CDevice <|-- SCD40

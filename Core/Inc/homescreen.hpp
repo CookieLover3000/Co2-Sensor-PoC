@@ -4,6 +4,7 @@
 #include "DisplayScreenBase.hpp"
 #include "SensorDriverBase.hpp"
 #include "SensorHandler.hpp"
+#include <DisplaySettings.hpp>
 #include <lvgl.h>
 
 namespace UI
@@ -24,13 +25,7 @@ class Homescreen : public DisplayScreenBase
   private:
     App::SensorHandler &sensor;
     Drivers::SCD40Data sensorData = {0, 0, 0};
-
-    typedef enum
-    {
-        CO2,
-        TEMPERATURE,
-        HUMIDITY
-    } Monitor;
+    Settings::DisplaySettings settings;
 
     typedef enum
     {
@@ -54,7 +49,7 @@ class Homescreen : public DisplayScreenBase
         lv_obj_t *value_label;
         lv_obj_t *symbol_label;
         WidgetType type;
-        Monitor monitor;
+        Settings::DisplaySettings::Monitor monitor;
         lv_color_t active_color;
     } Widget_t;
 
@@ -72,7 +67,7 @@ class Homescreen : public DisplayScreenBase
         .value_label = NULL,
         .symbol_label = NULL,
         .type = MAIN,
-        .monitor = CO2,
+        .monitor = settings.mainMonitor,
         .active_color = homescreen_status_colors.co2_dangerous,
     };
     Widget_t upper_widget = {
@@ -80,7 +75,7 @@ class Homescreen : public DisplayScreenBase
         .value_label = NULL,
         .symbol_label = NULL,
         .type = UPPER,
-        .monitor = TEMPERATURE,
+        .monitor = settings.upperMonitor,
         .active_color = homescreen_status_colors.temperature,
     };
     Widget_t lower_widget = {
@@ -88,7 +83,7 @@ class Homescreen : public DisplayScreenBase
         .value_label = NULL,
         .symbol_label = NULL,
         .type = LOWER,
-        .monitor = HUMIDITY,
+        .monitor = settings.lowerMonitor,
         .active_color = homescreen_status_colors.humidity,
     };
 
@@ -96,7 +91,7 @@ class Homescreen : public DisplayScreenBase
 
     void init_widget(Widget_t *widget);
     void update_widget_label(Widget_t *widget, const char *co2, const char *temp, const char *hum, uint16_t co2_value);
-    void change_widget(Widget_t *widget, Monitor new_monitor);
+    void change_widget(Widget_t *widget, Settings::DisplaySettings::Monitor new_monitor);
     bool getSensorData();
 
     bool screenSwitch = false;

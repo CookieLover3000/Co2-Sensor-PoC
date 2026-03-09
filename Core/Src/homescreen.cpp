@@ -122,7 +122,7 @@ void Homescreen::init_widget(Widget_t *widget)
     switch (widget->monitor)
     {
 
-    case CO2:
+    case Settings::DisplaySettings::CO2:
         // I don't like how I did this, but it works.
         if (sensorData.co2 >= CO2_DANGEROUS_VALUE)
         {
@@ -149,14 +149,14 @@ void Homescreen::init_widget(Widget_t *widget)
 
         break;
 
-    case TEMPERATURE:
+    case Settings::DisplaySettings::TEMPERATURE:
         lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.temperature, LV_PART_INDICATOR);
         lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.temperature, LV_PART_MAIN);
         lv_label_set_text(widget->value_label, temperature_string);
         lv_label_set_text(widget->symbol_label, "°C");
         break;
 
-    case HUMIDITY:
+    case Settings::DisplaySettings::HUMIDITY:
         lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.humidity, LV_PART_INDICATOR);
         lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.humidity, LV_PART_MAIN);
         lv_label_set_text(widget->value_label, humidity_string);
@@ -173,7 +173,7 @@ void Homescreen::update_widget_label(Widget_t *widget, const char *co2, const ch
 
     switch (widget->monitor)
     {
-    case CO2:
+    case Settings::DisplaySettings::CO2:
         lv_label_set_text(widget->value_label, co2);
         if (co2_value >= CO2_DANGEROUS_VALUE &&
             !lv_color_eq(widget->active_color, homescreen_status_colors.co2_dangerous))
@@ -196,10 +196,10 @@ void Homescreen::update_widget_label(Widget_t *widget, const char *co2, const ch
         }
 
         break;
-    case TEMPERATURE:
+    case Settings::DisplaySettings::TEMPERATURE:
         lv_label_set_text(widget->value_label, temp);
         break;
-    case HUMIDITY:
+    case Settings::DisplaySettings::HUMIDITY:
         lv_label_set_text(widget->value_label, hum);
         break;
     }
@@ -248,26 +248,26 @@ void Homescreen::update()
     }
 }
 
-__attribute__((unused)) void Homescreen::change_widget(Widget_t *widget, Monitor new_monitor)
+__attribute__((unused)) void Homescreen::change_widget(Widget_t *widget, Settings::DisplaySettings::Monitor new_monitor)
 {
     lv_color_t old_color = widget->active_color;
     widget->monitor = new_monitor;
 
     switch (new_monitor)
     {
-    case CO2:
+    case Settings::DisplaySettings::CO2:
         homescreen_anim_update_label_text_fade(widget->value_label, "1000", 0);
         homescreen_anim_update_label_text_fade(widget->symbol_label, "PPM", 0);
         homescreen_anim_change_arc_color(widget->arc, old_color, homescreen_status_colors.co2_dangerous,
                                          LABEL_FADE_ANIM_DURATION_MS + ARC_COLOR_SWAP_DELAY);
         break;
-    case TEMPERATURE:
+    case Settings::DisplaySettings::TEMPERATURE:
         homescreen_anim_update_label_text_fade(widget->value_label, "19.5", 0);
         homescreen_anim_update_label_text_fade(widget->symbol_label, "°C", 0);
         homescreen_anim_change_arc_color(widget->arc, old_color, homescreen_status_colors.temperature,
                                          LABEL_FADE_ANIM_DURATION_MS + ARC_COLOR_SWAP_DELAY);
         break;
-    case HUMIDITY:
+    case Settings::DisplaySettings::HUMIDITY:
         homescreen_anim_update_label_text_fade(widget->value_label, "46", 0);
         homescreen_anim_update_label_text_fade(widget->symbol_label, "%", 0);
         homescreen_anim_change_arc_color(widget->arc, old_color, homescreen_status_colors.humidity,
