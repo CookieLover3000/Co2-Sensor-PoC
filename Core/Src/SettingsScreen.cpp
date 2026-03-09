@@ -42,6 +42,7 @@ void SettingsScreen::initBrightnessControls()
     lv_obj_set_x(brightnessSettings.container, 0);
     lv_obj_set_y(brightnessSettings.container, -103);
     lv_obj_set_align(brightnessSettings.container, LV_ALIGN_CENTER);
+    lv_obj_add_flag(brightnessSettings.container, LV_OBJ_FLAG_HIDDEN);
 
     brightnessSettings.panel = lv_obj_create(brightnessSettings.container);
     lv_obj_set_width(brightnessSettings.panel, 480);
@@ -77,7 +78,6 @@ void SettingsScreen::initBrightnessControls()
         lv_slider_set_left_value(brightnessSettings.slider, (int32_t)settings.getMinBrightness(), LV_ANIM_OFF);
     lv_obj_set_width(brightnessSettings.slider, 400);
     lv_obj_set_height(brightnessSettings.slider, 10);
-
     lv_obj_set_x(brightnessSettings.slider, 0);
     lv_obj_set_y(brightnessSettings.slider, -10);
     lv_obj_set_align(brightnessSettings.slider, LV_ALIGN_CENTER);
@@ -136,6 +136,35 @@ void SettingsScreen::initButtons(void)
     lv_obj_set_align(done.label, LV_ALIGN_CENTER);
     lv_label_set_text(done.label, "Done");
     lv_obj_set_style_text_font(done.label, &custom_font_montserrat_22, LV_PART_MAIN);
+
+    brightnessMenu.button = lv_btn_create(settingsscreen_screen);
+    lv_obj_set_width(brightnessMenu.button, 70);
+    lv_obj_set_height(brightnessMenu.button, 40);
+    lv_obj_set_x(brightnessMenu.button, -201);
+    lv_obj_set_y(brightnessMenu.button, 134);
+    lv_obj_set_align(brightnessMenu.button, LV_ALIGN_CENTER);
+    lv_obj_add_flag(brightnessMenu.button, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
+    lv_obj_remove_flag(brightnessMenu.button, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_add_event_cb(brightnessMenu.button, onBrightnessMenuPressed, LV_EVENT_CLICKED, this);
+
+    brightnessMenu.label = lv_label_create(brightnessMenu.button);
+    lv_obj_set_width(brightnessMenu.label, LV_SIZE_CONTENT);
+    lv_obj_set_height(brightnessMenu.label, LV_SIZE_CONTENT);
+    lv_obj_set_align(brightnessMenu.label, LV_ALIGN_CENTER);
+    lv_label_set_text(brightnessMenu.label, "🔆"); // change to symbol
+    lv_obj_set_style_text_font(brightnessMenu.label, &brightness_symbol_22, LV_PART_MAIN);
+}
+
+void SettingsScreen::toggleBrightnessControls()
+{
+    if (lv_obj_has_flag(brightnessSettings.container, LV_OBJ_FLAG_HIDDEN))
+    {
+        lv_obj_remove_flag(brightnessSettings.container, LV_OBJ_FLAG_HIDDEN);
+    }
+    else
+    {
+        lv_obj_add_flag(brightnessSettings.container, LV_OBJ_FLAG_HIDDEN);
+    }
 }
 
 void SettingsScreen::update()
@@ -174,6 +203,8 @@ void SettingsScreen::destroy()
         button.label = NULL;
     }
 
+    brightnessMenu.button = NULL;
+    brightnessMenu.label = NULL;
     done.button = NULL;
     done.label = NULL;
 }
@@ -196,6 +227,22 @@ void SettingsScreen::onDonePressed(lv_event_t *e)
     if (instance)
     {
         instance->screenSwitch = true;
+    }
+}
+
+void SettingsScreen::onBrightnessMenuPressed(lv_event_t *e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+
+    if (code != LV_EVENT_CLICKED)
+    {
+        return;
+    }
+
+    SettingsScreen *instance = (SettingsScreen *)lv_event_get_user_data(e);
+    if (instance)
+    {
+        instance->toggleBrightnessControls();
     }
 }
 

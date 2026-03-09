@@ -77,8 +77,15 @@ class SettingsScreen : public DisplayScreenBase
         lv_obj_t *label = nullptr;
     };
 
+    struct BrightnessMenuButton_t
+    {
+        lv_obj_t *button = nullptr;
+        lv_obj_t *label = nullptr;
+    };
+
     BrightnessSettings_t brightnessSettings = {};
     DoneButton_t done = {};
+    BrightnessMenuButton_t brightnessMenu = {};
 
     lv_obj_t *settingsscreen_screen = nullptr;
 
@@ -94,8 +101,10 @@ class SettingsScreen : public DisplayScreenBase
     void initBrightnessControls(void);
     void initButtons(void);
     void checkBrightnessSlider(void);
+    void toggleBrightnessControls(void);
     // callbacks
     static void onDonePressed(lv_event_t *e);
+    static void onBrightnessMenuPressed(lv_event_t *e);
     static void onBrightnessButtonPressed(lv_event_t *e);
     /* end private functions */
 };
