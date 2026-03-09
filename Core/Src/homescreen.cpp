@@ -44,6 +44,8 @@ void Homescreen::init(void)
 
 void Homescreen::init_widget(Widget_t *widget)
 {
+    widget->monitor = settings.getMonitor(widget->type);
+
     // I don't like how I did this, but it works.
     uint16_t temp_int = (uint16_t)sensorData.temperature;
     uint16_t temp_dec = (uint16_t)((sensorData.temperature - temp_int) * 10);
@@ -81,7 +83,7 @@ void Homescreen::init_widget(Widget_t *widget)
 
     switch (widget->type)
     {
-    case MAIN:
+    case Settings::DisplaySettings::MAIN:
         lv_obj_set_align(widget->arc, LV_ALIGN_LEFT_MID);
         lv_obj_set_style_text_font(widget->value_label, &custom_font_montserrat_44, LV_PART_MAIN);
         lv_obj_set_style_text_font(widget->symbol_label, &custom_font_montserrat_22, LV_PART_MAIN);
@@ -92,7 +94,7 @@ void Homescreen::init_widget(Widget_t *widget)
         lv_obj_set_x(widget->symbol_label, 0);
         lv_obj_set_y(widget->symbol_label, -34);
         break;
-    case UPPER:
+    case Settings::DisplaySettings::UPPER:
         lv_obj_set_align(widget->arc, LV_ALIGN_RIGHT_MID);
         lv_obj_set_style_text_font(widget->value_label, &custom_font_montserrat_34, LV_PART_MAIN);
         lv_obj_set_style_text_font(widget->symbol_label, &custom_font_montserrat_18, LV_PART_MAIN);
@@ -105,7 +107,7 @@ void Homescreen::init_widget(Widget_t *widget)
         lv_obj_set_x(widget->symbol_label, 0);
         lv_obj_set_y(widget->symbol_label, -22);
         break;
-    case LOWER:
+    case Settings::DisplaySettings::LOWER:
         lv_obj_set_align(widget->arc, LV_ALIGN_RIGHT_MID);
         lv_obj_set_style_text_font(widget->value_label, &custom_font_montserrat_34, LV_PART_MAIN);
         lv_obj_set_style_text_font(widget->symbol_label, &custom_font_montserrat_18, LV_PART_MAIN);

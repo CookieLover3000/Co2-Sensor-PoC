@@ -27,12 +27,6 @@ class Homescreen : public DisplayScreenBase
     Drivers::SCD40Data sensorData = {0, 0, 0};
     Settings::DisplaySettings settings;
 
-    typedef enum
-    {
-        MAIN,
-        UPPER,
-        LOWER
-    } WidgetType;
     typedef struct
     {
         const lv_color_t co2_dangerous;
@@ -48,7 +42,7 @@ class Homescreen : public DisplayScreenBase
         lv_obj_t *arc;
         lv_obj_t *value_label;
         lv_obj_t *symbol_label;
-        WidgetType type;
+        Settings::DisplaySettings::WidgetType type;
         Settings::DisplaySettings::Monitor monitor;
         lv_color_t active_color;
     } Widget_t;
@@ -66,24 +60,24 @@ class Homescreen : public DisplayScreenBase
         .arc = NULL,
         .value_label = NULL,
         .symbol_label = NULL,
-        .type = MAIN,
-        .monitor = settings.mainMonitor,
+        .type = Settings::DisplaySettings::MAIN,
+        .monitor = settings.getMainMonitor(),
         .active_color = homescreen_status_colors.co2_dangerous,
     };
     Widget_t upper_widget = {
         .arc = NULL,
         .value_label = NULL,
         .symbol_label = NULL,
-        .type = UPPER,
-        .monitor = settings.upperMonitor,
+        .type = Settings::DisplaySettings::UPPER,
+        .monitor = settings.getUpperMonitor(),
         .active_color = homescreen_status_colors.temperature,
     };
     Widget_t lower_widget = {
         .arc = NULL,
         .value_label = NULL,
         .symbol_label = NULL,
-        .type = LOWER,
-        .monitor = settings.lowerMonitor,
+        .type = Settings::DisplaySettings::LOWER,
+        .monitor = settings.getLowerMonitor(),
         .active_color = homescreen_status_colors.humidity,
     };
 
