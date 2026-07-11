@@ -2,3 +2,6 @@
 	path = Middlewares/Third_Party/lvgl
 	url = https://github.com/lvgl/lvgl.git
 	branch = release/v9.4
+[submodule "Middlewares/Third_Party/lv"]
+	path = Middlewares/Third_Party/lv
+	url = https://github.com/aptumfr/lv.git

@@ -63,6 +63,13 @@ target_include_directories(lvgl PRIVATE
     ${PROJECT_SOURCE_DIR}/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
 )
 
+# Add lv
+set(LV_BUILD_EXAMPLES OFF CACHE BOOL "")
+set(LV_BUILD_DEMOS OFF CACHE BOOL "")
+set(LV_BUILD_TESTS OFF CACHE BOOL "")
+
+add_subdirectory(Middlewares/Third_Party/lv)
+
 
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
@@ -117,6 +124,6 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
     lvgl
-
+    lv
     # Add user defined libraries
 )
