@@ -15,6 +15,7 @@ class SettingsScreen : public DisplayScreenBase
   public:
     ~SettingsScreen() {}
     virtual void init(void) override;
+    virtual void load(void) override;
     virtual void update(void) override;
     virtual void destroy(void) override;
     virtual bool shouldSwitch(void) override;

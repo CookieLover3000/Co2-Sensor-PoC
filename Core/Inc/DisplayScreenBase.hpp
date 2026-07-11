@@ -8,6 +8,7 @@ class DisplayScreenBase
   public:
     virtual ~DisplayScreenBase() = default;
     virtual void init(void) = 0;
+    virtual void load(void) = 0;
     virtual void update(void) = 0;
     virtual void destroy(void) = 0;
     virtual bool shouldSwitch(void) = 0;

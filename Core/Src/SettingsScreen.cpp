@@ -23,7 +23,6 @@ void SettingsScreen::init()
     lv_obj_remove_flag(settingsscreen_screen, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_bg_color(settingsscreen_screen, lv_color_black(), LV_PART_MAIN);
 
-    lv_screen_load(settingsscreen_screen); // very important, don't forget again next time...
     initWidget(&mainWidget);
     initWidget(&upperWidget);
     initWidget(&lowerWidget);
@@ -231,6 +230,11 @@ void SettingsScreen::toggleBrightnessControls()
     }
 }
 
+void SettingsScreen::load()
+{
+    lv_screen_load(settingsscreen_screen); // very important, don't forget again next time...
+}
+
 void SettingsScreen::update()
 {
     // polling instead of callback because this is quick enough and I'm lazy.
@@ -242,7 +246,10 @@ void SettingsScreen::update()
 
 bool SettingsScreen::shouldSwitch()
 {
-    return screenSwitch;
+    bool ret = screenSwitch;
+    if (screenSwitch)
+        screenSwitch = false;
+    return ret;
 }
 
 void SettingsScreen::checkRollerValue(Widget_t *widget)

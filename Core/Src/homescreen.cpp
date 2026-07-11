@@ -38,27 +38,10 @@ void Homescreen::init(void)
     init_widget(&main_widget);
     init_widget(&upper_widget);
     init_widget(&lower_widget);
-
-    lv_screen_load(homescreen_screen);
 }
 
 void Homescreen::init_widget(Widget_t *widget)
 {
-    widget->monitor = settings.getMonitor(widget->type);
-
-    // I don't like how I did this, but it works.
-    uint16_t temp_int = (uint16_t)sensorData.temperature;
-    uint16_t temp_dec = (uint16_t)((sensorData.temperature - temp_int) * 10);
-    uint16_t humid_int = (uint16_t)sensorData.humidity;
-
-    char co2_string[6];
-    char temperature_string[12];
-    char humidity_string[10];
-
-    snprintf(co2_string, sizeof(co2_string), "%u", sensorData.co2);
-    snprintf(temperature_string, sizeof(temperature_string), "%d.%d", temp_int, temp_dec);
-    snprintf(humidity_string, sizeof(humidity_string), "%u", humid_int);
-
     // values between 400-600 are good. Above 750 are fine and above 1000 is bad.
     widget->arc = lv_arc_create(homescreen_screen);
 
@@ -120,6 +103,26 @@ void Homescreen::init_widget(Widget_t *widget)
         lv_obj_set_x(widget->symbol_label, 0);
         lv_obj_set_y(widget->symbol_label, -22);
     }
+
+    update_widget_monitor(widget);
+}
+
+void Homescreen::update_widget_monitor(Widget_t *widget)
+{
+    widget->monitor = settings.getMonitor(widget->type);
+
+    // I don't like how I did this, but it works.
+    uint16_t temp_int = (uint16_t)sensorData.temperature;
+    uint16_t temp_dec = (uint16_t)((sensorData.temperature - temp_int) * 10);
+    uint16_t humid_int = (uint16_t)sensorData.humidity;
+
+    char co2_string[6];
+    char temperature_string[12];
+    char humidity_string[10];
+
+    snprintf(co2_string, sizeof(co2_string), "%u", sensorData.co2);
+    snprintf(temperature_string, sizeof(temperature_string), "%d.%d", temp_int, temp_dec);
+    snprintf(humidity_string, sizeof(humidity_string), "%u", humid_int);
 
     switch (widget->monitor)
     {
@@ -220,6 +223,15 @@ bool Homescreen::getSensorData()
     return false;
 }
 
+void Homescreen::load()
+{
+    update_widget_monitor(&main_widget);
+    update_widget_monitor(&upper_widget);
+    update_widget_monitor(&lower_widget);
+
+    lv_screen_load(homescreen_screen);
+}
+
 void Homescreen::update()
 {
     char co2_string[6];
@@ -279,7 +291,10 @@ __attribute__((unused)) void Homescreen::change_widget(Widget_t *widget, Setting
 
 bool Homescreen::shouldSwitch()
 {
-    return screenSwitch;
+    bool ret = screenSwitch;
+    if (screenSwitch)
+        screenSwitch = false;
+    return ret;
 }
 
 void Homescreen::handleLongPress()

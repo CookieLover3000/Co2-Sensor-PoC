@@ -28,10 +28,8 @@ void DisplayHandler::init()
 
 void DisplayHandler::setScreen(UI::DisplayScreenBase &newScreen)
 {
-    if (currentScreen)
-        currentScreen->destroy();
     currentScreen = &newScreen;
-    currentScreen->init();
+    currentScreen->load();
 }
 
 void DisplayHandler::updateBrightnessLogic()
@@ -112,12 +110,7 @@ void DisplayHandler::switchScreen(ScreenState newState)
 
     if (nextScreen)
     {
-        nextScreen->init();
-    }
-
-    if (currentScreen)
-    {
-        currentScreen->destroy();
+        nextScreen->load();
     }
 
     currentState = newState;
@@ -167,9 +160,17 @@ void DisplayHandler::LVGLTask()
 
     lv_indev_add_event_cb(indev, DisplayHandler::lvglLongPressCb, LV_EVENT_LONG_PRESSED, this);
 
+    bootscreen.init();
+
     currentState = BOOT;
     currentScreen = &bootscreen;
-    currentScreen->init();
+    currentScreen->load();
+
+    // load the boot screen to the screenbuffer, otherwise it takes a lot of time for the bootscreen to render.
+    lv_timer_handler();
+
+    homescreen.init();
+    settingsscreen.init();
 
     while (1)
     {

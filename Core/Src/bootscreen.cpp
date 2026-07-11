@@ -1,12 +1,7 @@
 #include "bootscreen.hpp"
 #include "custom_fonts.h"
-#include <lvgl.h>
-#include <src/font/lv_font.h>
-#include <src/lv_api_map_v8.h>
-#include <src/misc/lv_color.h>
-#include <src/widgets/label/lv_label.h>
 
-// #include <lv/core/screen.hpp>
+#include <lv/lv.hpp>
 
 using namespace UI;
 
@@ -22,7 +17,10 @@ void Bootscreen::init()
                     .text_color(lv_color_white())
                     .align(LV_ALIGN_CENTER, 0, 0)
                     .text_font(&custom_font_montserrat_48);
+}
 
+void Bootscreen::load()
+{
     bootscreen_screen->load();
 
     timer.start(bootDuration);

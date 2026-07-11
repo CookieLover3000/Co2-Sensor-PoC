@@ -17,6 +17,7 @@ class Homescreen : public DisplayScreenBase
     ~Homescreen();
 
     virtual void init(void) override;
+    virtual void load(void) override;
     virtual void update(void) override;
     virtual void destroy(void) override;
     virtual bool shouldSwitch(void) override;
@@ -84,6 +85,7 @@ class Homescreen : public DisplayScreenBase
     lv_obj_t *homescreen_screen = NULL;
 
     void init_widget(Widget_t *widget);
+    void update_widget_monitor(Widget_t *widget);
     void update_widget_label(Widget_t *widget, const char *co2, const char *temp, const char *hum, uint16_t co2_value);
     void change_widget(Widget_t *widget, Settings::DisplaySettings::Monitor new_monitor);
     bool getSensorData();
