@@ -3,7 +3,9 @@
 
 #include "DisplayScreenBase.hpp"
 #include "NonBlockingTimer.h"
-#include <lvgl.h>
+#include <lv/lv.hpp>
+#include <optional>
+
 namespace UI
 {
 
@@ -19,8 +21,8 @@ class Bootscreen : public DisplayScreenBase
     virtual void handleLongPress(void) override;
 
   private:
-    lv_obj_t *bootscreen_screen = NULL;
-    lv_obj_t *boot_text = NULL;
+    std::optional<lv::Screen> bootscreen_screen;
+    lv::Label boot_text;
     NonBlockingTimer timer;
     static constexpr uint32_t bootDuration = 6000; // Sensors take about 5000 ms to initialize.
     bool done;

@@ -1,32 +1,29 @@
 #include "bootscreen.hpp"
 #include "custom_fonts.h"
 #include <lvgl.h>
-#include <src/display/lv_display.h>
 #include <src/font/lv_font.h>
 #include <src/lv_api_map_v8.h>
 #include <src/misc/lv_color.h>
 #include <src/widgets/label/lv_label.h>
 
+// #include <lv/core/screen.hpp>
+
 using namespace UI;
 
-Bootscreen::~Bootscreen()
-{
-    destroy();
-}
+Bootscreen::~Bootscreen() {}
 
 void Bootscreen::init()
 {
-    bootscreen_screen = lv_obj_create(NULL);
-    lv_obj_clear_flag(bootscreen_screen, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_style_bg_color(bootscreen_screen, lv_color_black(), LV_PART_MAIN);
+    bootscreen_screen.emplace();
+    bootscreen_screen->remove_flag(LV_OBJ_FLAG_SCROLLABLE).bg_color(lv_color_black());
 
-    boot_text = lv_label_create(bootscreen_screen);
-    lv_label_set_text(boot_text, "CO2 MONITOR");
-    lv_obj_set_style_text_color(boot_text, lv_color_white(), LV_PART_MAIN);
-    lv_obj_align(boot_text, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_set_style_text_font(boot_text, &custom_font_montserrat_48, LV_PART_MAIN);
+    boot_text = lv::Label::create(*bootscreen_screen)
+                    .text("CO2 MONITOR")
+                    .text_color(lv_color_white())
+                    .align(LV_ALIGN_CENTER, 0, 0)
+                    .text_font(&custom_font_montserrat_48);
 
-    lv_screen_load(bootscreen_screen);
+    bootscreen_screen->load();
 
     timer.start(bootDuration);
 }
@@ -42,12 +39,10 @@ void Bootscreen::update()
         done = true;
 }
 
+/// TODO: Look into changing destroy/delete to hide.
 void Bootscreen::destroy()
 {
-    if (bootscreen_screen)
-        lv_obj_del_async(bootscreen_screen);
-    bootscreen_screen = NULL;
-    boot_text = NULL;
+    bootscreen_screen->del();
 }
 
 void Bootscreen::handleLongPress()
