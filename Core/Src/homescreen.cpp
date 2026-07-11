@@ -4,11 +4,6 @@
 #include "custom_fonts.h"
 #include "homescreen_anim.h"
 
-#include <src/core/lv_obj_style.h>
-#include <src/display/lv_display.h>
-#include <src/font/lv_font.h>
-#include <src/misc/lv_color.h>
-#include <src/misc/lv_types.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -27,10 +22,10 @@ Homescreen::~Homescreen()
 
 void Homescreen::init(void)
 {
-    homescreen_screen = lv_obj_create(NULL);
-    lv_obj_clear_flag(homescreen_screen, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_style_bg_color(homescreen_screen, lv_color_black(), LV_PART_MAIN);
-    lv_obj_set_style_bg_opa(homescreen_screen, LV_OPA_100, LV_PART_MAIN);
+    // init screen
+    homescreen_screen.emplace();
+
+    homescreen_screen->remove_flag(LV_OBJ_FLAG_SCROLLABLE).bg_color(lv_color_black()).bg_opa(LV_OPA_100);
 
     while (!getSensorData())
         osDelay(10);
@@ -43,65 +38,64 @@ void Homescreen::init(void)
 void Homescreen::init_widget(Widget_t *widget)
 {
     // values between 400-600 are good. Above 750 are fine and above 1000 is bad.
-    widget->arc = lv_arc_create(homescreen_screen);
+    widget->arc = lv::Arc::create(*homescreen_screen)
+                      .range(0, 100)
+                      .value(100)
+                      .bg_angles(0, 360)
+                      .remove_flag(LV_OBJ_FLAG_CLICKABLE)
+                      .remove_style(nullptr, LV_PART_KNOB);
 
-    lv_arc_set_range(widget->arc, 0, 100);
-    lv_arc_set_value(widget->arc, 100);
-    lv_arc_set_bg_angles(widget->arc, 0, 360);
-    lv_obj_remove_flag(widget->arc, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_remove_style(widget->arc, NULL, LV_PART_KNOB);
+    widget->value_label = lv::Label::create(widget->arc)
+                              .width(LV_SIZE_CONTENT)
+                              .height(LV_SIZE_CONTENT)
+                              .align(LV_ALIGN_CENTER)
+                              .text_color(lv_color_white(), LV_PART_MAIN);
 
-    widget->value_label = lv_label_create(widget->arc);
-    lv_obj_set_width(widget->value_label, LV_SIZE_CONTENT);
-    lv_obj_set_height(widget->value_label, LV_SIZE_CONTENT);
-    lv_obj_set_align(widget->value_label, LV_ALIGN_CENTER);
-    lv_obj_set_style_text_color(widget->value_label, lv_color_white(), LV_PART_MAIN);
-
-    widget->symbol_label = lv_label_create(widget->arc);
-    lv_obj_set_width(widget->symbol_label, LV_SIZE_CONTENT);
-    lv_obj_set_height(widget->symbol_label, LV_SIZE_CONTENT);
-    lv_obj_set_align(widget->symbol_label, LV_ALIGN_BOTTOM_MID);
-    lv_obj_set_style_text_color(widget->symbol_label, lv_color_white(), LV_PART_MAIN);
-    lv_obj_set_style_text_opa(widget->symbol_label, 255, LV_PART_MAIN);
+    widget->symbol_label = lv::Label::create(widget->arc)
+                               .width(LV_SIZE_CONTENT)
+                               .height(LV_SIZE_CONTENT)
+                               .align(LV_ALIGN_BOTTOM_MID)
+                               .text_color(lv_color_white(), LV_PART_MAIN)
+                               .opa(255, LV_PART_MAIN);
 
     switch (widget->type)
     {
     case Settings::DisplaySettings::MAIN:
-        lv_obj_set_align(widget->arc, LV_ALIGN_LEFT_MID);
-        lv_obj_set_style_text_font(widget->value_label, &custom_font_montserrat_44, LV_PART_MAIN);
-        lv_obj_set_style_text_font(widget->symbol_label, &custom_font_montserrat_22, LV_PART_MAIN);
-        lv_obj_set_width(widget->arc, 213);
-        lv_obj_set_height(widget->arc, 213);
-        lv_obj_set_x(widget->arc, 66);
-        lv_obj_set_y(widget->arc, -3);
-        lv_obj_set_x(widget->symbol_label, 0);
-        lv_obj_set_y(widget->symbol_label, -34);
+        widget->arc.align(LV_ALIGN_LEFT_MID);
+        widget->value_label.text_font(&custom_font_montserrat_44, LV_PART_MAIN);
+        widget->symbol_label.text_font(&custom_font_montserrat_22, LV_PART_MAIN);
+        widget->arc.width(213);
+        widget->arc.height(213);
+        widget->arc.x(66);
+        widget->arc.y(-3);
+        widget->symbol_label.x(0);
+        widget->symbol_label.y(-34);
         break;
     case Settings::DisplaySettings::UPPER:
-        lv_obj_set_align(widget->arc, LV_ALIGN_RIGHT_MID);
-        lv_obj_set_style_text_font(widget->value_label, &custom_font_montserrat_34, LV_PART_MAIN);
-        lv_obj_set_style_text_font(widget->symbol_label, &custom_font_montserrat_18, LV_PART_MAIN);
-        lv_obj_set_width(widget->arc, 134);
-        lv_obj_set_height(widget->arc, 134);
-        lv_obj_set_style_arc_width(widget->arc, 8, LV_PART_MAIN);
-        lv_obj_set_style_arc_width(widget->arc, 8, LV_PART_INDICATOR);
-        lv_obj_set_x(widget->arc, -66);
-        lv_obj_set_y(widget->arc, -77);
-        lv_obj_set_x(widget->symbol_label, 0);
-        lv_obj_set_y(widget->symbol_label, -22);
+        widget->arc.align(LV_ALIGN_RIGHT_MID);
+        widget->value_label.text_font(&custom_font_montserrat_34, LV_PART_MAIN);
+        widget->symbol_label.text_font(&custom_font_montserrat_18, LV_PART_MAIN);
+        widget->arc.width(134);
+        widget->arc.height(134);
+        widget->arc.arc_width(8);
+        widget->arc.indicator_width(8);
+        widget->arc.x(-66);
+        widget->arc.y(-77);
+        widget->symbol_label.x(0);
+        widget->symbol_label.y(-22);
         break;
     case Settings::DisplaySettings::LOWER:
-        lv_obj_set_align(widget->arc, LV_ALIGN_RIGHT_MID);
-        lv_obj_set_style_text_font(widget->value_label, &custom_font_montserrat_34, LV_PART_MAIN);
-        lv_obj_set_style_text_font(widget->symbol_label, &custom_font_montserrat_18, LV_PART_MAIN);
-        lv_obj_set_width(widget->arc, 134);
-        lv_obj_set_height(widget->arc, 134);
-        lv_obj_set_style_arc_width(widget->arc, 8, LV_PART_MAIN);
-        lv_obj_set_style_arc_width(widget->arc, 8, LV_PART_INDICATOR);
-        lv_obj_set_x(widget->arc, -66);
-        lv_obj_set_y(widget->arc, 77);
-        lv_obj_set_x(widget->symbol_label, 0);
-        lv_obj_set_y(widget->symbol_label, -22);
+        widget->arc.align(LV_ALIGN_RIGHT_MID);
+        widget->value_label.text_font(&custom_font_montserrat_34, LV_PART_MAIN);
+        widget->symbol_label.text_font(&custom_font_montserrat_18, LV_PART_MAIN);
+        widget->arc.width(134);
+        widget->arc.height(134);
+        widget->arc.arc_width(8);
+        widget->arc.indicator_width(8);
+        widget->arc.x(-66);
+        widget->arc.y(77);
+        widget->symbol_label.x(0);
+        widget->symbol_label.y(-22);
     }
 
     update_widget_monitor(widget);
@@ -112,9 +106,10 @@ void Homescreen::update_widget_monitor(Widget_t *widget)
     widget->monitor = settings.getMonitor(widget->type);
 
     // I don't like how I did this, but it works.
-    uint16_t temp_int = (uint16_t)sensorData.temperature;
-    uint16_t temp_dec = (uint16_t)((sensorData.temperature - temp_int) * 10);
-    uint16_t humid_int = (uint16_t)sensorData.humidity;
+    // uint16_t temp_int = (uint16_t)sensorData.temperature;
+    uint16_t temp_int = static_cast<uint16_t>(sensorData.temperature);
+    uint16_t temp_dec = static_cast<uint16_t>((sensorData.temperature - temp_int) * 10);
+    uint16_t humid_int = static_cast<uint16_t>(sensorData.humidity);
 
     char co2_string[6];
     char temperature_string[12];
@@ -131,41 +126,41 @@ void Homescreen::update_widget_monitor(Widget_t *widget)
         // I don't like how I did this, but it works.
         if (sensorData.co2 >= CO2_DANGEROUS_VALUE)
         {
-            lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_dangerous, LV_PART_INDICATOR);
-            lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_dangerous, LV_PART_MAIN);
+            widget->arc.indicator_arc_color(homescreen_status_colors.co2_dangerous);
+            widget->arc.arc_color(homescreen_status_colors.co2_dangerous);
             widget->active_color = homescreen_status_colors.co2_dangerous;
         }
         else if (sensorData.co2 >= CO2_WARNING_VALUE && sensorData.co2 < CO2_DANGEROUS_VALUE)
         {
-            lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_warning, LV_PART_INDICATOR);
-            lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_warning, LV_PART_MAIN);
+            widget->arc.indicator_arc_color(homescreen_status_colors.co2_warning);
+            widget->arc.arc_color(homescreen_status_colors.co2_warning);
             widget->active_color = homescreen_status_colors.co2_warning;
         }
         else
         {
-            lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_safe, LV_PART_INDICATOR);
-            lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.co2_safe, LV_PART_MAIN);
+            widget->arc.indicator_arc_color(homescreen_status_colors.co2_safe);
+            widget->arc.arc_color(homescreen_status_colors.co2_safe);
             widget->active_color = homescreen_status_colors.co2_safe;
         }
 
-        lv_label_set_text(widget->value_label, co2_string);
-
-        lv_label_set_text(widget->symbol_label, "PPM");
+        widget->value_label.text(co2_string);
+        widget->symbol_label.text("PPM");
 
         break;
 
     case Settings::DisplaySettings::TEMPERATURE:
-        lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.temperature, LV_PART_INDICATOR);
-        lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.temperature, LV_PART_MAIN);
-        lv_label_set_text(widget->value_label, temperature_string);
-        lv_label_set_text(widget->symbol_label, "°C");
+
+        widget->arc.indicator_arc_color(homescreen_status_colors.temperature);
+        widget->arc.arc_color(homescreen_status_colors.temperature);
+        widget->value_label.text(temperature_string);
+        widget->symbol_label.text("°C");
         break;
 
     case Settings::DisplaySettings::HUMIDITY:
-        lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.humidity, LV_PART_INDICATOR);
-        lv_obj_set_style_arc_color(widget->arc, homescreen_status_colors.humidity, LV_PART_MAIN);
-        lv_label_set_text(widget->value_label, humidity_string);
-        lv_label_set_text(widget->symbol_label, "%");
+        widget->arc.indicator_arc_color(homescreen_status_colors.humidity);
+        widget->arc.arc_color(homescreen_status_colors.humidity);
+        widget->value_label.text(humidity_string);
+        widget->symbol_label.text("%");
         break;
     }
 }
@@ -179,7 +174,7 @@ void Homescreen::update_widget_label(Widget_t *widget, const char *co2, const ch
     switch (widget->monitor)
     {
     case Settings::DisplaySettings::CO2:
-        lv_label_set_text(widget->value_label, co2);
+        widget->value_label.text(co2);
         if (co2_value >= CO2_DANGEROUS_VALUE &&
             !lv_color_eq(widget->active_color, homescreen_status_colors.co2_dangerous))
         {
@@ -202,10 +197,10 @@ void Homescreen::update_widget_label(Widget_t *widget, const char *co2, const ch
 
         break;
     case Settings::DisplaySettings::TEMPERATURE:
-        lv_label_set_text(widget->value_label, temp);
+        widget->value_label.text(temp);
         break;
     case Settings::DisplaySettings::HUMIDITY:
-        lv_label_set_text(widget->value_label, hum);
+        widget->value_label.text(hum);
         break;
     }
 }
@@ -229,7 +224,7 @@ void Homescreen::load()
     update_widget_monitor(&upper_widget);
     update_widget_monitor(&lower_widget);
 
-    lv_screen_load(homescreen_screen);
+    homescreen_screen->load();
 }
 
 void Homescreen::update()
@@ -262,7 +257,8 @@ void Homescreen::update()
     }
 }
 
-__attribute__((unused)) void Homescreen::change_widget(Widget_t *widget, Settings::DisplaySettings::Monitor new_monitor)
+[[maybe_unused]]
+void Homescreen::change_widget(Widget_t *widget, Settings::DisplaySettings::Monitor new_monitor)
 {
     lv_color_t old_color = widget->active_color;
     widget->monitor = new_monitor;
@@ -306,17 +302,5 @@ void Homescreen::destroy(void)
 {
     screenSwitch = false;
 
-    if (homescreen_screen)
-        lv_obj_del_async(homescreen_screen);
-
-    homescreen_screen = NULL;
-    main_widget.arc = NULL;
-    main_widget.value_label = NULL;
-    main_widget.symbol_label = NULL;
-    upper_widget.arc = NULL;
-    upper_widget.value_label = NULL;
-    upper_widget.symbol_label = NULL;
-    lower_widget.arc = NULL;
-    lower_widget.value_label = NULL;
-    upper_widget.symbol_label = NULL;
+    homescreen_screen->del();
 }

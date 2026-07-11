@@ -5,7 +5,8 @@
 #include "SensorDriverBase.hpp"
 #include "SensorHandler.hpp"
 #include <DisplaySettings.hpp>
-#include <lvgl.h>
+#include <lv/lv.hpp>
+#include <optional>
 
 namespace UI
 {
@@ -30,59 +31,61 @@ class Homescreen : public DisplayScreenBase
 
     typedef struct
     {
-        const lv_color_t co2_dangerous;
-        const lv_color_t co2_warning;
-        const lv_color_t co2_safe;
-        const lv_color_t temperature;
-        const lv_color_t humidity;
+        const lv::Color co2_dangerous;
+        const lv::Color co2_warning;
+        const lv::Color co2_safe;
+        const lv::Color temperature;
+        const lv::Color humidity;
 
     } HomescreenColors_t;
 
     typedef struct
     {
-        lv_obj_t *arc;
-        lv_obj_t *value_label;
-        lv_obj_t *symbol_label;
+        lv::Arc arc;
+        lv::Label value_label;
+        lv::Label symbol_label;
         Settings::DisplaySettings::WidgetType type;
         Settings::DisplaySettings::Monitor monitor;
-        lv_color_t active_color;
+        lv::Color active_color;
     } Widget_t;
 
     const HomescreenColors_t homescreen_status_colors = {
-        .co2_dangerous = LV_COLOR_MAKE(0xEC, 0x1C, 0x24),
-        .co2_warning = LV_COLOR_MAKE(0xF0, 0x5A, 0x28),
-        .co2_safe = LV_COLOR_MAKE(0x37, 0xB3, 0x4A),
-        .temperature = LV_COLOR_MAKE(0xF6, 0x92, 0x1E),
-        .humidity = LV_COLOR_MAKE(0x00, 0xAD, 0xEE),
+        .co2_dangerous = lv::rgb(0xEC, 0x1C, 0x24),
+        .co2_warning = lv::rgb(0xF0, 0x5A, 0x28),
+        .co2_safe = lv::rgb(0x37, 0xB3, 0x4A),
+        .temperature = lv::rgb(0xF6, 0x92, 0x1E),
+        .humidity = lv::rgb(0x00, 0xAD, 0xEE),
 
     };
 
     Widget_t main_widget = {
-        .arc = NULL,
-        .value_label = NULL,
-        .symbol_label = NULL,
+        .arc = {},
+        .value_label = {},
+        .symbol_label = {},
         .type = Settings::DisplaySettings::MAIN,
         .monitor = settings.getMainMonitor(),
         .active_color = homescreen_status_colors.co2_dangerous,
     };
     Widget_t upper_widget = {
-        .arc = NULL,
-        .value_label = NULL,
-        .symbol_label = NULL,
+        .arc = {},
+        .value_label = {},
+        .symbol_label = {},
         .type = Settings::DisplaySettings::UPPER,
         .monitor = settings.getUpperMonitor(),
         .active_color = homescreen_status_colors.temperature,
     };
     Widget_t lower_widget = {
-        .arc = NULL,
-        .value_label = NULL,
-        .symbol_label = NULL,
+        .arc = {},
+        .value_label = {},
+        .symbol_label = {},
         .type = Settings::DisplaySettings::LOWER,
         .monitor = settings.getLowerMonitor(),
         .active_color = homescreen_status_colors.humidity,
     };
 
-    lv_obj_t *homescreen_screen = NULL;
+    // not really optional, but the object should be initialized during the init() call and not at construct time of
+    // this class.
+    std::optional<lv::Screen> homescreen_screen;
 
     void init_widget(Widget_t *widget);
     void update_widget_monitor(Widget_t *widget);
