@@ -2,26 +2,17 @@
 #include "custom_fonts.h"
 #include <DisplaySettings.hpp>
 #include <cstdint>
-#include <lvgl.h>
-#include <src/misc/lv_anim.h>
-#include <src/misc/lv_color.h>
-#include <src/misc/lv_event.h>
-#include <src/misc/lv_types.h>
-#include <src/widgets/slider/lv_slider.h>
+#include <lv/lv.hpp>
 #include <stdio.h>
 
 using namespace UI;
 
-SettingsScreen::brightnessButtonCbData SettingsScreen::brightnessButtonCbDataArray[brightness_button_amount];
-lv_style_t SettingsScreen::brightness_button_style_selected;
-lv_style_t SettingsScreen::brightness_button_style_unselected;
-
 void SettingsScreen::init()
 {
-    // screen
-    settingsscreen_screen = lv_obj_create(NULL);
-    lv_obj_remove_flag(settingsscreen_screen, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_style_bg_color(settingsscreen_screen, lv_color_black(), LV_PART_MAIN);
+    // init screen
+    settingsscreen_screen.emplace();
+
+    settingsscreen_screen->remove_flag(LV_OBJ_FLAG_SCROLLABLE).bg_color(lv::colors::black(), LV_PART_MAIN);
 
     initWidget(&mainWidget);
     initWidget(&upperWidget);
@@ -32,88 +23,91 @@ void SettingsScreen::init()
 
 void SettingsScreen::initBrightnessControls()
 {
-    lv_style_set_bg_color(&brightness_button_style_selected, lv_color_hex(0x0076FF));
-    lv_style_set_bg_color(&brightness_button_style_unselected, lv_color_black());
+    brightness_button_style_selected.bg_color(lv::rgb(0x0076FF));
+    brightness_button_style_unselected.bg_color(lv::colors::black());
 
     // Container
-    brightnessSettings.container = lv_obj_create(settingsscreen_screen);
-    lv_obj_remove_style_all(brightnessSettings.container);
-    lv_obj_set_width(brightnessSettings.container, 480);
-    lv_obj_set_height(brightnessSettings.container, 115);
-    lv_obj_set_x(brightnessSettings.container, 0);
-    lv_obj_set_y(brightnessSettings.container, -103);
-    lv_obj_set_align(brightnessSettings.container, LV_ALIGN_CENTER);
-    lv_obj_add_flag(brightnessSettings.container, LV_OBJ_FLAG_HIDDEN);
+    brightnessSettings.container = lv::Box::create(*settingsscreen_screen)
+                                       .remove_all_styles()
+                                       .width(480)
+                                       .height(115)
+                                       .x(0)
+                                       .y(-103)
+                                       .align(LV_ALIGN_CENTER)
+                                       .add_flag(LV_OBJ_FLAG_HIDDEN);
 
-    brightnessSettings.panel = lv_obj_create(brightnessSettings.container);
-    lv_obj_set_width(brightnessSettings.panel, 480);
-    lv_obj_set_height(brightnessSettings.panel, 116);
-    lv_obj_set_align(brightnessSettings.panel, LV_ALIGN_CENTER);
-    lv_obj_remove_flag(brightnessSettings.panel, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_style_bg_color(brightnessSettings.panel, lv_color_hex(0x000000), LV_PART_MAIN);
-    lv_obj_set_style_bg_opa(brightnessSettings.panel, 255, LV_PART_MAIN);
-    lv_obj_set_style_border_color(brightnessSettings.panel, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
-    lv_obj_set_style_border_opa(brightnessSettings.panel, 255, LV_PART_MAIN);
-    lv_obj_set_style_border_width(brightnessSettings.panel, 2, LV_PART_MAIN);
-    lv_obj_set_style_blend_mode(brightnessSettings.panel, LV_BLEND_MODE_NORMAL, LV_PART_MAIN);
-    lv_obj_set_style_opa(brightnessSettings.panel, 200, LV_PART_MAIN);
+    brightnessSettings.panel = lv::Box::create(brightnessSettings.container)
+                                   .width(480)
+                                   .height(116)
+                                   .align(LV_ALIGN_CENTER)
+                                   .remove_flag(LV_OBJ_FLAG_SCROLLABLE)
+                                   .bg_color(lv::rgb(0x000000), LV_PART_MAIN)
+                                   .bg_opa(255, LV_PART_MAIN)
+                                   .border_color(lv::rgb(0xFFFFFF), LV_PART_MAIN)
+                                   .border_opa(255, LV_PART_MAIN)
+                                   .border_width(2, LV_PART_MAIN)
+                                   .blend_mode(LV_BLEND_MODE_NORMAL, LV_PART_MAIN)
+                                   .opa(200, LV_PART_MAIN);
 
     // Title
-    brightnessSettings.title = lv_label_create(brightnessSettings.container);
-    lv_obj_set_width(brightnessSettings.title, LV_SIZE_CONTENT);
-    lv_obj_set_height(brightnessSettings.title, LV_SIZE_CONTENT);
-    lv_obj_set_x(brightnessSettings.title, 0);
-    lv_obj_set_y(brightnessSettings.title, -40);
-    lv_obj_set_align(brightnessSettings.title, LV_ALIGN_CENTER);
-    lv_label_set_text(brightnessSettings.title, "BRIGHTNESS");
-    lv_obj_set_style_text_color(brightnessSettings.title, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
-    lv_obj_set_style_text_opa(brightnessSettings.title, 255, LV_PART_MAIN);
-    lv_obj_set_style_text_font(brightnessSettings.title, &custom_font_montserrat_22, LV_PART_MAIN);
+    brightnessSettings.title = lv::Label::create(brightnessSettings.container)
+                                   .width(LV_SIZE_CONTENT)
+                                   .height(LV_SIZE_CONTENT)
+                                   .x(0)
+                                   .y(-40)
+                                   .align(LV_ALIGN_CENTER)
+                                   .text("BRIGHTNESS")
+                                   .text_color(lv::rgb(0xFFFFFF), LV_PART_MAIN)
+                                   .opa(255, LV_PART_MAIN)
+                                   .text_font(&custom_font_montserrat_22, LV_PART_MAIN);
 
     // Slider
-    brightnessSettings.slider = lv_slider_create(brightnessSettings.container);
-    lv_slider_set_mode(brightnessSettings.slider, LV_SLIDER_MODE_RANGE);
-    lv_slider_set_range(brightnessSettings.slider, slider_min_value, slider_max_value);
-    lv_slider_set_value(brightnessSettings.slider, (int32_t)settings.getMaxBrightness(), LV_ANIM_OFF);
+    brightnessSettings.slider = lv::Slider::create(brightnessSettings.container)
+                                    .mode(LV_SLIDER_MODE_RANGE)
+                                    .range(slider_min_value, slider_max_value)
+                                    .value(static_cast<int32_t>(settings.getMaxBrightness())) // without animation
+                                    .width(400)
+                                    .height(10)
+                                    .x(0)
+                                    .y(-10)
+                                    .align(LV_ALIGN_CENTER);
+
     if (lv_slider_get_mode(brightnessSettings.slider) == LV_SLIDER_MODE_RANGE)
-        lv_slider_set_left_value(brightnessSettings.slider, (int32_t)settings.getMinBrightness(), LV_ANIM_OFF);
-    lv_obj_set_width(brightnessSettings.slider, 400);
-    lv_obj_set_height(brightnessSettings.slider, 10);
-    lv_obj_set_x(brightnessSettings.slider, 0);
-    lv_obj_set_y(brightnessSettings.slider, -10);
-    lv_obj_set_align(brightnessSettings.slider, LV_ALIGN_CENTER);
+    {
+        brightnessSettings.slider.left_value(static_cast<int32_t>(settings.getMinBrightness()));
+    }
 
     // Buttons
     int16_t x_pos = -140;
 
-    for (size_t i = 0; i < brightnessSettings.buttons.size(); i++)
+    for (uint8_t i = 0; i < brightnessSettings.buttons.size(); i++)
     {
         auto &button = brightnessSettings.buttons[i];
-        button.button = lv_btn_create(brightnessSettings.container);
-        lv_obj_set_width(button.button, 60);
-        lv_obj_set_height(button.button, 30);
-        lv_obj_set_x(button.button, x_pos);
-        lv_obj_set_y(button.button, 20);
-        lv_obj_set_align(button.button, LV_ALIGN_CENTER);
-        lv_obj_remove_flag(button.button, LV_OBJ_FLAG_SCROLLABLE);
+        button.button = lv::Button::create(brightnessSettings.container)
+                            .width(60)
+                            .height(30)
+                            .x(x_pos)
+                            .y(20)
+                            .align(LV_ALIGN_CENTER)
+                            .remove_flag(LV_OBJ_FLAG_SCROLLABLE);
 
-        lv_style_t *style =
-            (i == selected_button_index) ? &brightness_button_style_selected : &brightness_button_style_unselected;
-        lv_obj_add_style(button.button, style, LV_PART_MAIN);
+        lv::Style &style =
+            (i == selected_button_index) ? brightness_button_style_selected : brightness_button_style_unselected;
+        button.button.add_style(style, LV_PART_MAIN);
 
         char buffer[8];
         snprintf(buffer, sizeof(buffer), "%d Min", brightness_buttons_values[i]);
 
-        button.label = lv_label_create(button.button);
-        lv_obj_set_width(button.label, LV_SIZE_CONTENT);
-        lv_obj_set_height(button.label, LV_SIZE_CONTENT);
-        lv_obj_set_align(button.label, LV_ALIGN_CENTER);
-        lv_label_set_text(button.label, buffer);
-        lv_obj_set_style_text_font(button.label, &custom_font_montserrat_16, LV_PART_MAIN);
+        button.label = lv::Label::create(button.button)
+                           .width(LV_SIZE_CONTENT)
+                           .height(LV_SIZE_CONTENT)
+                           .align(LV_ALIGN_CENTER)
+                           .text(buffer)
+                           .text_font(&custom_font_montserrat_16, LV_PART_MAIN);
 
-        brightnessButtonCbDataArray[i] = {this, i};
-        lv_obj_add_event_cb(button.button, onBrightnessButtonPressed, LV_EVENT_CLICKED,
-                            &brightnessButtonCbDataArray[i]);
+        brightnessButtonCbDataArray[i] = i;
+        button.button.user_data(&brightnessButtonCbDataArray[i])
+            .on_click<&UI::SettingsScreen::onBrightnessButtonPressed>(this);
 
         x_pos += 70;
     }
@@ -122,117 +116,98 @@ void SettingsScreen::initBrightnessControls()
 void SettingsScreen::initWidget(Widget_t *widget)
 {
 
-    widget->arc = lv_arc_create(settingsscreen_screen);
+    widget->arc = lv::Arc::create(*settingsscreen_screen)
+                      .bg_opa(0, LV_PART_KNOB)
+                      .indicator_color(Widget_t::active_color)
+                      .indicator_width(10)
+                      .bg_angles(0, 360)
+                      .value(100)
+                      .remove_flag(LV_OBJ_FLAG_CLICKABLE);
 
-    lv_obj_set_style_bg_opa(widget->arc, 0, LV_PART_KNOB | LV_STATE_DEFAULT);
-    lv_obj_set_style_arc_color(widget->arc, Widget_t::active_color, LV_PART_INDICATOR | LV_STATE_DEFAULT);
-    lv_obj_set_style_arc_width(widget->arc, 10, LV_PART_INDICATOR | LV_STATE_DEFAULT);
-    lv_arc_set_bg_angles(widget->arc, 0, 360);
-    lv_arc_set_value(widget->arc, 100);
-    lv_obj_remove_flag(widget->arc, LV_OBJ_FLAG_CLICKABLE);
-
-    widget->roller = lv_roller_create(widget->arc);
-    lv_roller_set_options(widget->roller, "CO2\n°C\nRH", LV_ROLLER_MODE_NORMAL);
-    lv_obj_set_align(widget->roller, LV_ALIGN_CENTER);
-    lv_obj_set_style_text_font(widget->roller, &custom_font_montserrat_26, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(widget->roller, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(widget->roller, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(widget->roller, lv_color_hex(0x000000), LV_PART_SELECTED | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(widget->roller, 255, LV_PART_SELECTED | LV_STATE_DEFAULT);
+    widget->roller = lv::Roller::create(widget->arc)
+                         .options("CO2\n°C\nRH", LV_ROLLER_MODE_NORMAL)
+                         .align(LV_ALIGN_CENTER)
+                         .text_font(&custom_font_montserrat_26, LV_PART_MAIN)
+                         .bg_color(lv::rgb(0x000000), LV_PART_MAIN)
+                         .bg_opa(255, LV_PART_MAIN)
+                         .bg_color(lv::rgb(0x000000), LV_PART_SELECTED)
+                         .bg_opa(255, LV_PART_SELECTED);
 
     uint16_t selected_index = settings.getMonitor(widget->type);
-    lv_roller_set_selected(widget->roller, selected_index, LV_ANIM_OFF);
+    widget->roller.selected(selected_index);
 
     switch (widget->type)
     {
     case Settings::DisplaySettings::CO2:
-        lv_obj_set_width(widget->arc, 213);
-        lv_obj_set_height(widget->arc, 213);
-        lv_obj_set_x(widget->arc, 66);
-        lv_obj_set_y(widget->arc, -3);
-        lv_obj_set_align(widget->arc, LV_ALIGN_LEFT_MID);
-        lv_obj_set_style_arc_width(widget->arc, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
+        widget->arc.width(213).height(213).x(66).y(-3).align(LV_ALIGN_LEFT_MID).arc_width(10);
 
-        lv_obj_set_width(widget->roller, 180);
-        lv_obj_set_height(widget->roller, 40);
+        widget->roller.width(180).height(40);
         break;
     case Settings::DisplaySettings::TEMPERATURE:
-        lv_obj_set_width(widget->arc, 134);
-        lv_obj_set_height(widget->arc, 134);
-        lv_obj_set_x(widget->arc, -66);
-        lv_obj_set_y(widget->arc, -77);
-        lv_obj_set_align(widget->arc, LV_ALIGN_RIGHT_MID);
-        lv_obj_set_style_arc_width(widget->arc, 8, LV_PART_MAIN | LV_STATE_DEFAULT);
+        widget->arc.width(134).height(134).x(-66).y(-77).align(LV_ALIGN_RIGHT_MID).arc_width(8);
 
-        lv_obj_set_width(widget->roller, 100);
-        lv_obj_set_height(widget->roller, 40);
+        widget->roller.width(100).height(40);
         break;
     case Settings::DisplaySettings::HUMIDITY:
-        lv_obj_set_width(widget->arc, 134);
-        lv_obj_set_height(widget->arc, 134);
-        lv_obj_set_x(widget->arc, -66);
-        lv_obj_set_y(widget->arc, 77);
-        lv_obj_set_align(widget->arc, LV_ALIGN_RIGHT_MID);
-        lv_obj_set_style_arc_width(widget->arc, 8, LV_PART_MAIN | LV_STATE_DEFAULT);
+        widget->arc.width(134).height(134).x(-66).y(77).align(LV_ALIGN_RIGHT_MID).arc_width(8);
 
-        lv_obj_set_width(widget->roller, 100);
-        lv_obj_set_height(widget->roller, 40);
+        widget->roller.width(100).height(40);
         break;
     }
 }
 
 void SettingsScreen::initButtons(void)
 {
-    done.button = lv_btn_create(settingsscreen_screen);
-    lv_obj_set_width(done.button, 70);
-    lv_obj_set_height(done.button, 40);
-    lv_obj_set_x(done.button, 201);
-    lv_obj_set_y(done.button, 134);
-    lv_obj_set_align(done.button, LV_ALIGN_CENTER);
-    lv_obj_add_flag(done.button, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
-    lv_obj_remove_flag(done.button, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_add_event_cb(done.button, onDonePressed, LV_EVENT_CLICKED, this);
+    done.button = lv::Button::create(*settingsscreen_screen)
+                      .width(70)
+                      .height(40)
+                      .x(201)
+                      .y(134)
+                      .align(LV_ALIGN_CENTER)
+                      .add_flag(LV_OBJ_FLAG_SCROLL_ON_FOCUS)
+                      .remove_flag(LV_OBJ_FLAG_SCROLLABLE)
+                      .on_click<&UI::SettingsScreen::onDonePressed>(this);
 
-    done.label = lv_label_create(done.button);
-    lv_obj_set_width(done.label, LV_SIZE_CONTENT);
-    lv_obj_set_height(done.label, LV_SIZE_CONTENT);
-    lv_obj_set_align(done.label, LV_ALIGN_CENTER);
-    lv_label_set_text(done.label, "Done");
-    lv_obj_set_style_text_font(done.label, &custom_font_montserrat_22, LV_PART_MAIN);
+    done.label = lv::Label::create(done.button)
+                     .width(LV_SIZE_CONTENT)
+                     .height(LV_SIZE_CONTENT)
+                     .align(LV_ALIGN_CENTER)
+                     .text("Done")
+                     .text_font(&custom_font_montserrat_22, LV_PART_MAIN);
 
-    brightnessMenu.button = lv_btn_create(settingsscreen_screen);
-    lv_obj_set_width(brightnessMenu.button, 70);
-    lv_obj_set_height(brightnessMenu.button, 40);
-    lv_obj_set_x(brightnessMenu.button, -201);
-    lv_obj_set_y(brightnessMenu.button, 134);
-    lv_obj_set_align(brightnessMenu.button, LV_ALIGN_CENTER);
-    lv_obj_add_flag(brightnessMenu.button, LV_OBJ_FLAG_SCROLL_ON_FOCUS);
-    lv_obj_remove_flag(brightnessMenu.button, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_add_event_cb(brightnessMenu.button, onBrightnessMenuPressed, LV_EVENT_CLICKED, this);
+    brightnessMenu.button = lv::Button::create(*settingsscreen_screen)
+                                .width(70)
+                                .height(40)
+                                .x(-201)
+                                .y(134)
+                                .align(LV_ALIGN_CENTER)
+                                .add_flag(LV_OBJ_FLAG_SCROLL_ON_FOCUS)
+                                .remove_flag(LV_OBJ_FLAG_SCROLLABLE)
+                                .on_click<&UI::SettingsScreen::onBrightnessMenuPressed>(this);
 
-    brightnessMenu.label = lv_label_create(brightnessMenu.button);
-    lv_obj_set_width(brightnessMenu.label, LV_SIZE_CONTENT);
-    lv_obj_set_height(brightnessMenu.label, LV_SIZE_CONTENT);
-    lv_obj_set_align(brightnessMenu.label, LV_ALIGN_CENTER);
-    lv_label_set_text(brightnessMenu.label, "🔆"); // change to symbol
-    lv_obj_set_style_text_font(brightnessMenu.label, &brightness_symbol_22, LV_PART_MAIN);
+    brightnessMenu.label = lv::Label::create(brightnessMenu.button)
+                               .width(LV_SIZE_CONTENT)
+                               .height(LV_SIZE_CONTENT)
+                               .align(LV_ALIGN_CENTER)
+                               .text("🔆")
+                               .text_font(&brightness_symbol_22, LV_PART_MAIN);
 }
 
 void SettingsScreen::toggleBrightnessControls()
 {
-    if (lv_obj_has_flag(brightnessSettings.container, LV_OBJ_FLAG_HIDDEN))
+    if (brightnessSettings.container.has_flag(LV_OBJ_FLAG_HIDDEN))
     {
-        lv_obj_remove_flag(brightnessSettings.container, LV_OBJ_FLAG_HIDDEN);
+        brightnessSettings.container.remove_flag(LV_OBJ_FLAG_HIDDEN);
     }
     else
     {
-        lv_obj_add_flag(brightnessSettings.container, LV_OBJ_FLAG_HIDDEN);
+        brightnessSettings.container.add_flag(LV_OBJ_FLAG_HIDDEN);
     }
 }
 
 void SettingsScreen::load()
 {
-    lv_screen_load(settingsscreen_screen); // very important, don't forget again next time...
+    settingsscreen_screen->load();
 }
 
 void SettingsScreen::update()
@@ -254,7 +229,7 @@ bool SettingsScreen::shouldSwitch()
 
 void SettingsScreen::checkRollerValue(Widget_t *widget)
 {
-    uint16_t selected_index = lv_roller_get_selected(widget->roller);
+    uint16_t selected_index = widget->roller.selected();
 
     switch (selected_index)
     {
@@ -274,8 +249,8 @@ void SettingsScreen::checkRollerValue(Widget_t *widget)
 
 void SettingsScreen::checkBrightnessSlider()
 {
-    int32_t min_value = lv_slider_get_left_value(brightnessSettings.slider);
-    int32_t max_value = lv_slider_get_value(brightnessSettings.slider);
+    int32_t min_value = brightnessSettings.slider.left_value();
+    int32_t max_value = brightnessSettings.slider.value();
     settings.setMinBrightness((uint8_t)min_value);
     settings.setMaxBrightness((uint8_t)max_value);
 }
@@ -284,23 +259,7 @@ void SettingsScreen::destroy()
 {
     screenSwitch = false;
 
-    if (settingsscreen_screen)
-        lv_obj_del_async(settingsscreen_screen);
-
-    brightnessSettings.container = NULL;
-    brightnessSettings.panel = NULL;
-    brightnessSettings.title = NULL;
-    brightnessSettings.slider = NULL;
-    for (auto &button : brightnessSettings.buttons)
-    {
-        button.button = NULL;
-        button.label = NULL;
-    }
-
-    brightnessMenu.button = NULL;
-    brightnessMenu.label = NULL;
-    done.button = NULL;
-    done.label = NULL;
+    settingsscreen_screen->del();
 }
 
 void SettingsScreen::handleLongPress()
@@ -308,64 +267,34 @@ void SettingsScreen::handleLongPress()
     return;
 }
 
-void SettingsScreen::onDonePressed(lv_event_t *e)
+void SettingsScreen::onDonePressed()
 {
-    lv_event_code_t code = lv_event_get_code(e);
-
-    if (code != LV_EVENT_CLICKED)
-    {
-        return;
-    }
-
-    SettingsScreen *instance = (SettingsScreen *)lv_event_get_user_data(e);
-    if (instance)
-    {
-        instance->screenSwitch = true;
-    }
+    screenSwitch = true;
 }
 
-void SettingsScreen::onBrightnessMenuPressed(lv_event_t *e)
+void SettingsScreen::onBrightnessMenuPressed()
 {
-    lv_event_code_t code = lv_event_get_code(e);
-
-    if (code != LV_EVENT_CLICKED)
-    {
-        return;
-    }
-
-    SettingsScreen *instance = (SettingsScreen *)lv_event_get_user_data(e);
-    if (instance)
-    {
-        instance->toggleBrightnessControls();
-    }
+    toggleBrightnessControls();
 }
 
-void SettingsScreen::onBrightnessButtonPressed(lv_event_t *e)
+void SettingsScreen::onBrightnessButtonPressed(lv::Event e)
 {
-    lv_event_code_t code = lv_event_get_code(e);
-    lv_obj_t *clicked_btn = static_cast<lv_obj_t *>(lv_event_get_target(e));
+    auto clicked_btn = e.target();
 
-    if (code != LV_EVENT_CLICKED)
-        return;
+    auto *data = static_cast<uint8_t *>(clicked_btn.get_user_data());
 
-    brightnessButtonCbData *data = static_cast<brightnessButtonCbData *>(lv_event_get_user_data(e));
+    uint8_t index = *data;
 
-    SettingsScreen *instance = data->instance;
-    uint8_t index = data->index;
-    if (instance == nullptr)
-        return;
+    selected_button_index = index;
 
-    instance->selected_button_index = index;
-
-    for (auto &button : instance->brightnessSettings.buttons)
+    for (auto &button : brightnessSettings.buttons)
     {
-        lv_obj_remove_style(button.button, &brightness_button_style_selected, LV_PART_MAIN);
-        lv_obj_add_style(button.button, &brightness_button_style_unselected, LV_PART_MAIN);
+        button.button.remove_style(brightness_button_style_selected, LV_PART_MAIN)
+            .add_style(brightness_button_style_unselected, LV_PART_MAIN);
     }
-
-    lv_obj_remove_style(clicked_btn, &brightness_button_style_unselected, LV_PART_MAIN);
-    lv_obj_add_style(clicked_btn, &brightness_button_style_selected, LV_PART_MAIN);
+    clicked_btn.remove_style(brightness_button_style_unselected, LV_PART_MAIN)
+        .add_style(brightness_button_style_selected, LV_PART_MAIN);
 
     uint32_t ms = brightness_buttons_values[index] * 60000;
-    instance->settings.setDisplayOffDelay(ms);
+    settings.setDisplayOffDelay(ms);
 }

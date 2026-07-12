@@ -3,10 +3,12 @@
 
 #include "DisplayScreenBase.hpp"
 #include "DisplaySettings.hpp"
+
+#include <lv/lv.hpp>
+
 #include <array>
-#include <lvgl.h>
-#include <src/misc/lv_types.h>
-#include <stdint.h>
+#include <cstdint>
+#include <optional>
 
 namespace UI
 {
@@ -34,35 +36,28 @@ class SettingsScreen : public DisplayScreenBase
     // Values display time in minutes.
     static constexpr std::array<uint8_t, brightness_button_amount> brightness_buttons_values = {1, 2, 5, 10, 15};
 
-    // necessary because callback needs to be static and as such can only access static variables
-    struct brightnessButtonCbData
-    {
-        SettingsScreen *instance;
-        size_t index;
-    };
+    uint8_t brightnessButtonCbDataArray[brightness_button_amount];
 
-    static brightnessButtonCbData brightnessButtonCbDataArray[brightness_button_amount];
-
-    static lv_style_t brightness_button_style_selected;
-    static lv_style_t brightness_button_style_unselected;
+    lv::Style brightness_button_style_selected;
+    lv::Style brightness_button_style_unselected;
 
     // needs to be saved to NVS
-    size_t selected_button_index = 0;
+    uint8_t selected_button_index = 0;
 
     /* end button callback stuff */
 
     struct BrightnessDurrButton_t
     {
-        lv_obj_t *button = nullptr;
-        lv_obj_t *label = nullptr;
+        lv::Button button;
+        lv::Label label;
     };
 
     struct BrightnessSettings_t
     {
-        lv_obj_t *container = nullptr;
-        lv_obj_t *panel = nullptr;
-        lv_obj_t *title = nullptr;
-        lv_obj_t *slider = nullptr;
+        lv::Box container;
+        lv::Box panel; // I think
+        lv::Label title;
+        lv::Slider slider;
         std::array<BrightnessDurrButton_t, brightness_button_amount> buttons = {};
     };
 
@@ -72,42 +67,42 @@ class SettingsScreen : public DisplayScreenBase
 
     struct DoneButton_t
     {
-        lv_obj_t *button = nullptr;
-        lv_obj_t *label = nullptr;
+        lv::Button button;
+        lv::Label label;
     };
 
     struct BrightnessMenuButton_t
     {
-        lv_obj_t *button = nullptr;
-        lv_obj_t *label = nullptr;
+        lv::Button button;
+        lv::Label label;
     };
 
     struct Widget_t
     {
-        lv_obj_t *arc;
-        lv_obj_t *roller;
+        lv::Arc arc;
+        lv::Roller roller;
         Settings::DisplaySettings::WidgetType type;
         Settings::DisplaySettings::Monitor monitor;
-        static constexpr lv_color_t active_color = LV_COLOR_MAKE(0x00, 0xAD, 0xEE);
+        static constexpr lv::Color active_color = LV_COLOR_MAKE(0x00, 0xAD, 0xEE);
     };
 
     Widget_t mainWidget = {
-        .arc = NULL,
-        .roller = NULL,
+        .arc = {},
+        .roller = {},
         .type = Settings::DisplaySettings::MAIN,
         .monitor = settings.getMainMonitor(),
     };
 
     Widget_t upperWidget = {
-        .arc = NULL,
-        .roller = NULL,
+        .arc = {},
+        .roller = {},
         .type = Settings::DisplaySettings::UPPER,
         .monitor = settings.getUpperMonitor(),
     };
 
     Widget_t lowerWidget = {
-        .arc = NULL,
-        .roller = NULL,
+        .arc = {},
+        .roller = {},
         .type = Settings::DisplaySettings::LOWER,
         .monitor = settings.getLowerMonitor(),
     };
@@ -116,7 +111,7 @@ class SettingsScreen : public DisplayScreenBase
     DoneButton_t done = {};
     BrightnessMenuButton_t brightnessMenu = {};
 
-    lv_obj_t *settingsscreen_screen = nullptr;
+    std::optional<lv::Screen> settingsscreen_screen;
 
     /* end LVGL objects */
 
@@ -128,9 +123,9 @@ class SettingsScreen : public DisplayScreenBase
     void initWidget(Widget_t *widget);
     void checkRollerValue(Widget_t *widget);
     // callbacks
-    static void onDonePressed(lv_event_t *e);
-    static void onBrightnessMenuPressed(lv_event_t *e);
-    static void onBrightnessButtonPressed(lv_event_t *e);
+    void onDonePressed();
+    void onBrightnessMenuPressed();
+    void onBrightnessButtonPressed(lv::Event e);
     /* end private functions */
 };
 } // namespace UI
