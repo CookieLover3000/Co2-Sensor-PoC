@@ -38,9 +38,11 @@ void ST7796::lvglDisplayInit(void)
     lv_display_set_buffers(lcd_disp, buf1, buf2, sizeof(buf1), LV_DISPLAY_RENDER_MODE_PARTIAL);
     lv_display_set_color_format(lcd_disp, LV_COLOR_FORMAT_RGB565_SWAPPED);
 }
-
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 void ST7796::lcd_color_transfer_ready_cb(SPI_HandleTypeDef *hspi)
 {
+#pragma GCC diagnostic pop
     /* CS high */
     HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
     instance->lcd_bus_busy = 0;

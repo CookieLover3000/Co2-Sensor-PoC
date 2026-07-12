@@ -572,10 +572,13 @@ static void MX_GPIO_Init(void)
  * @param  argument: Not used
  * @retval None
  */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
     /* USER CODE BEGIN 5 */
+#pragma GCC diagnostic pop
     /* Infinite loop */
     for (;;)
     {
